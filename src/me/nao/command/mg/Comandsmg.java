@@ -2128,6 +2128,24 @@ public class Comandsmg implements CommandExecutor{
         			
         			return true;
         			
+        		}else if(args[0].equalsIgnoreCase("prestige")) {
+          			
+          			//mg invite Tutorial
+          				CommandsMessage c1 = new CommandsMessage(plugin);
+          				c1.infoPrestige(player);
+          		
+        			
+        			return true;
+        			
+        		}else if(args[0].equalsIgnoreCase("upgradeprestige")) {
+          			
+          			//mg invite Tutorial
+          				PointsManager pm = new PointsManager(plugin);
+          				pm.prestigeMg(player);
+          		
+        			
+        			return true;
+        			
         		}else if(args[0].equalsIgnoreCase("time")) {
               	
               		LocalDateTime lt = gc.AddOrRemoveMg();

@@ -86,6 +86,7 @@ public class TabCompletemg implements TabCompleter{
 			arguments.add("addtag");
 			arguments.add("removetag");
 			arguments.add("showtags");
+			arguments.add("prestige");
 		
 			
 		}

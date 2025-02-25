@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -87,7 +88,7 @@ public class PointsManager {
 			int revive = gp.getRevive();
 			int total ;
 			//2
-			kills = kills * 2;
+			kills = kills * 25;
 			helpr = helpr * 15;
 			deads = deads * 30;
 			revive = revive * 10;
@@ -117,11 +118,13 @@ public class PointsManager {
 			int savelvl = points.getInt("Players."+player.getName()+".Level");
 			int prestige = points.getInt("Players."+player.getName()+".Prestige");
 			
-			if(savelvl == 100) {
+			//360 sera el tope de niveles , ultimo nivel 359 : pide 1223099 de xp para 360
+			
+			if(savelvl == 360) {
 				player.sendMessage(ChatColor.DARK_PURPLE+"Has alcanzado el Nivel Maximo ahora puedes Acceder al Prestigio.");
 				return;
 			}
-			if(savelvl == 100 && prestige == 100) {
+			if(savelvl == 360 && prestige == 10) {
 				player.sendMessage(ChatColor.DARK_PURPLE+"Has alcanzado el Nivel y Prestigio Maximo.");
 				return;
 			}
@@ -195,6 +198,29 @@ public class PointsManager {
 			
 		}
 		
+		//no tiene muchas condiciones por que esas van en otro lado CommandsMessage
+		public void prestigeMg(Player player) {
+			
+				FileConfiguration points = plugin.getPoints();
+			
+				int prestige = points.getInt("Players."+player.getName()+".Prestige");
+			
+				points.set("Players."+player.getName()+".Level",0);
+				points.set("Players."+player.getName()+".Xp",0);
+				points.set("Players."+player.getName()+".Reference-Xp",1000);
+				points.set("Players."+player.getName()+".Prestige",(prestige+1));
+				saveAll();
+				player.sendMessage(ChatColor.DARK_PURPLE+"Felicidades eres Prestigio: "+(prestige+1));
+				player.sendTitle(""+ChatColor.DARK_PURPLE+ChatColor.BOLD+"["+ChatColor.GREEN+ChatColor.BOLD+"FELICIDADES"+ChatColor.DARK_PURPLE+ChatColor.BOLD+"]", ""+ChatColor.GREEN+ChatColor.BOLD+"SUBISTE DE PRESTIGIO "+ChatColor.GOLD+ChatColor.BOLD+(prestige+1), 20, 40, 20);
+				player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 100,1);
+				Fireworks fw = new Fireworks(player);
+				fw.spawnFireballGreenLarge();
+				fw.spawnFireballAquaLarge();
+				fw.spawnMetodoAyi();
+				return;
+			
+			
+		}
 		
 		public void WinGamePoints(Player player) {
 			FileConfiguration points = plugin.getPoints();
@@ -328,6 +354,8 @@ public class PointsManager {
 			
 		 }
 	}
+	
+	 
 	
 	public String topArmorStand() {
 		
