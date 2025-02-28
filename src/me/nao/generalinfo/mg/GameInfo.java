@@ -15,7 +15,8 @@ public class GameInfo {
 	
 	
 	private String name , time;
-	private int maxplayers,minplayers, loottablemax , itemspawnrange , spawnmobrange , countdownstart;
+	private int maxplayers,minplayers, loottablemax , itemspawnrange , spawnmobrange , countdownstart, toxiczonerange;
+	private int pointsperkills, pointsperdeads , pointsperrevive ,pointsperhelprevive , pointsbonus;
 	private List<String> participants,spectators;
 	private GameType type;
 	private GameStatus estpart;
@@ -55,6 +56,12 @@ public class GameInfo {
 		this.barriers = true;
 		this.gt = null;
 		this.countdownstart = 0;
+		this.toxiczonerange = 0;
+		this.pointsperkills = 25;
+		this.pointsperdeads = 30;
+		this.pointsperrevive = 10;
+		this.pointsperhelprevive = 15;
+		
 	}
 	
 	
@@ -146,6 +153,30 @@ public class GameInfo {
 		return countdownstart;
 	}
 	
+	public int getToxicZoneRange() {
+		return toxiczonerange;
+	}
+	
+	public int getPointsPerKills() {
+		return pointsperkills;
+	}
+	
+	public int getPointsPerDeads() {
+		return pointsperdeads;
+	}
+	
+	public int getPointsPerRevive() {
+		return pointsperrevive;
+	}
+	
+	public int getPointsPerHelpRevive() {
+		return pointsperhelprevive;
+	}
+	
+	public int getPointsBonus() {
+		return pointsbonus;
+	}
+	
 	public void setMapName(String name) {
 		this.name = name;
 	}
@@ -224,6 +255,30 @@ public class GameInfo {
 	
 	public void setCountDownStart(int countdownstart) {
 		this.countdownstart = countdownstart;
+	}
+	
+	public void setToxicZoneRange(int toxiczonerange) {
+		this.toxiczonerange = toxiczonerange;
+	}
+	
+	public void setPointsPerKills(int pointsperkills) {
+		this.pointsperkills = pointsperkills;
+	}
+	
+	public void setPointsPerDeads(int pointsperdeads) {
+		this.pointsperdeads = pointsperdeads;
+	}
+	
+	public void setPointsPerRevive(int pointsperrevive) {
+		this.pointsperrevive = pointsperrevive;
+	}
+	
+	public void setPointsPerHelpRevive(int pointsperhelprevive) {
+		this.pointsperhelprevive = pointsperhelprevive;
+	}
+	
+	public void setPointsBonus(int pointsbonus) {
+		this.pointsbonus = pointsbonus;
 	}
 	
 	public String ShowGame() {

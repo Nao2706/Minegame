@@ -295,7 +295,7 @@ public class SourceOfDamage implements Listener{
 					player.getWorld().spawnParticle(Particle.DRAGON_BREATH, player.getLocation().add(1, 0, 1),
 							/* NUMERO DE PARTICULAS */10, 1, 0, 1, /* velocidad */0, null, true);
 					
-					int rango = gi.getSpawnMobRange();
+					int rango = gi.getToxicZoneRange();
 					
 					List<Location> l = gi.getMobsGenerators();
 					

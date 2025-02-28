@@ -64,6 +64,7 @@ public class MapSettings {
 			FileConfiguration ym = plugin.getCacheSpecificYML(name);
 			ym.set("Type-Map","Adventure");
 			ym.set("Revive-System",false);
+			ym.set("CountDownPreLobby",30);
 			ym.set("Max-Player", 5);
 			ym.set("Min-Player", 2);
 			ym.set("Game-Timer-H-M-S", "1,5,10");
@@ -85,6 +86,17 @@ public class MapSettings {
 			List<String> perm = ym.getStringList("How-Get-Permission.Message");
 			ym.set("How-Get-Permission.Message", perm);
 			perm.add("Hola %player% necesitas un permiso para entrar a este Mapa.");
+			
+			ym.set("Points-System.Points-Per-Kills",25);
+			ym.set("Points-System.Points-Per-Deads",30);
+			ym.set("Points-System.Points-Per-Revive",15);
+			ym.set("Points-System.Points-Per-HelpRevive",10);
+			ym.set("Points-System.Points-Bonus",0);
+			
+			ym.set("Spawners-Detection.Mob-Spawner",10);
+			ym.set("Spawners-Detection.Ore-Spawner",10);
+			ym.set("Spawners-Detection.Toxic-Zone",10);
+			
 			
 			ym.set("Start.Tittle-of-Mision", "Mision %player%");
 			ym.set("Start.Tittle-Time", "20-40-20");

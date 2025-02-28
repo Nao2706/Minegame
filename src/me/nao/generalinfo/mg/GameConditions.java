@@ -1014,9 +1014,31 @@ public class GameConditions {
 			try {
 				FileConfiguration game = getGameConfig(map);
 				String time = game.getString("Game-Timer-H-M-S");
-				GameType type = GameType.valueOf(game.getString("Type-Map").toUpperCase());
+				String enumtype = game.getString("Type-Map").toUpperCase();
+				GameType type = GameType.valueOf(enumtype);
 				int maxplayers = game.getInt("Max-Player");
 				int minplayers = game.getInt("Min-Player");
+				
+				if(type == null) {
+					sendMessageToConsole(ChatColor.RED+"Error en el tipo de Juego "+enumtype+" no existe.");
+					return false;
+				}
+				
+				if(maxplayers < 0) {
+					sendMessageToConsole(ChatColor.RED+"Error el Maximo de Jugadores debe ser Mayor a 0");
+					return false;
+				}
+				
+				if(minplayers < 0) {
+					sendMessageToConsole(ChatColor.RED+"Error el Minimo de Jugadores debe ser Mayor a 0");
+					return false;
+				}
+				
+				if(maxplayers <= minplayers) {
+					sendMessageToConsole(ChatColor.RED+"Error el El Maximo de Juagdores y Minimo deben ser diferentes.");
+					sendMessageToConsole(ChatColor.RED+"Ejemplo Maximo 5 Minimo 1");
+					return false;
+				}
 				
 				BossBar boss = null ;
 				if(type == GameType.ADVENTURE) {
@@ -1030,7 +1052,7 @@ public class GameConditions {
 			    if(type == GameType.ADVENTURE || type == GameType.RESISTENCE) {
 			    	  //pasar solo una lista para los 4 espacios ojo
 				  
-			
+			 
 				    List<Entity> entities = new ArrayList<>();
 					      
 					     
@@ -1046,15 +1068,22 @@ public class GameConditions {
 			    	ga.setGameTimeActions(loadGameTimeActions(map));
 			    	ga.setCuboidZones(loadCuboidZones(map));
 			    	ga.setLootTableLimit(getLootTableLimit());
-			    	ga.setSpawnItemRange(getSpawnItemRange());
-			    	ga.setSpawnMobRange(getSpawnMobRange());
 			    	ga.setGenerators(loadMapGenerators(map));
 			    	ga.setMobsGenerators(loadMapMobsGenerators(map));
 			    	ga.setPvpinMap(isPvPAllowed(map));
 			    	ga.setGameTime(loadMapGameTime(map, time)); 
-			    	ga.setCountDownStart(loadCountdownMap());
+			    	ga.setCountDownStart(loadCountdownMap(map));
 			    	ga.setBarriersinMap(hasBarriersMap(map));
 			    	 
+			    	ga.setSpawnItemRange(getSpawnItemRange(map));
+			    	ga.setSpawnMobRange(getSpawnMobRange(map));
+			    	ga.setToxicZoneRange(getToxicZoneRange(map));
+			    	 
+			    	ga.setPointsPerKills(getPointsPerKills(map));
+			    	ga.setPointsPerDeads(getPointsPerDeads(map));
+			    	ga.setPointsPerRevive(getPointsPerRevive(map));
+			    	ga.setPointsPerHelpRevive(getPointsPerHelpRevive(map));
+			    	ga.setPointsBonus(getPointsBonus(map));
 			    	
 			    	System.out.println("LOG-1 MISION: "+ga.ShowGame());
 					
@@ -1175,13 +1204,22 @@ public class GameConditions {
 	 	gi.setGameTimeActions(loadGameTimeActions(map));
     	gi.setCuboidZones(loadCuboidZones(map));
     	gi.setLootTableLimit(getLootTableLimit());
-    	gi.setSpawnItemRange(getSpawnItemRange());
-    	gi.setSpawnMobRange(getSpawnMobRange());
     	gi.setGenerators(loadMapGenerators(map));
     	gi.setMobsGenerators(loadMapMobsGenerators(map));
     	gi.setPvpinMap(isPvPAllowed(map));
     	gi.setGameTime(loadMapGameTime(map, gi.getTimeMg()));
     	gi.setBarriersinMap(hasBarriersMap(map));
+    	gi.setCountDownStart(loadCountdownMap(map));
+    	
+    	gi.setSpawnItemRange(getSpawnItemRange(map));
+    	gi.setSpawnMobRange(getSpawnMobRange(map));
+    	gi.setToxicZoneRange(getToxicZoneRange(map));
+    	 
+    	gi.setPointsPerKills(getPointsPerKills(map));
+    	gi.setPointsPerDeads(getPointsPerDeads(map));
+    	gi.setPointsPerRevive(getPointsPerRevive(map));
+    	gi.setPointsPerHelpRevive(getPointsPerHelpRevive(map));
+    	gi.setPointsBonus(getPointsBonus(map));
 	}
 	
 	public boolean isPlayerKnocked(Player player) {
@@ -1200,16 +1238,6 @@ public class GameConditions {
 	public int getLootTableLimit() {
 		FileConfiguration config = plugin.getConfig();
 		return config.getInt("Loot-Table-Limit");
-	}
-	
-	public int getSpawnMobRange() {
-		FileConfiguration config = plugin.getConfig();
-		return config.getInt("Mob-Spawn-Range");
-	}
-	
-	public int getSpawnItemRange() {
-		FileConfiguration config = plugin.getConfig();
-		return config.getInt("Item-Spawn-Range");
 	}
 	
 	public boolean hasAntiVoid(Player player) {
@@ -1326,9 +1354,58 @@ public class GameConditions {
 		return mision.getInt("Max-Player");
 	}
 	
-	public boolean isEnabledReviveSystem(String map) {
+	/**
+	 * Obten el minimo de Juagadores 
+	 * @param String , el Mapa
+	 */
+	public int getMinPlayerMap(String map) {
 		FileConfiguration mision = getGameConfig(map);
-		return mision.getBoolean("Revive-System");
+		return mision.getInt("Min-Player");
+	}
+	
+	public int getSpawnItemRange(String map) {
+		FileConfiguration game = getGameConfig(map);
+		return game.getInt("Spawners-Detection.Ore-Spawner");
+	}
+	
+	public int getSpawnMobRange(String map) {
+		FileConfiguration game = getGameConfig(map);
+		return game.getInt("Spawners-Detection.Mob-Spawner");
+	}
+	
+	public int getToxicZoneRange(String map) {
+		FileConfiguration game = getGameConfig(map);
+		return game.getInt("Spawners-Detection.Toxic-Zone");
+	}
+	
+	public int getPointsPerKills(String map) {
+		FileConfiguration game = getGameConfig(map);
+		return game.getInt("Points-System.Points-Per-Kills");
+	}
+	
+	public int getPointsPerDeads(String map) {
+		FileConfiguration game = getGameConfig(map);
+		return game.getInt("Points-System.Points-Per-Deads");
+	}
+	
+	public int getPointsPerRevive(String map) {
+		FileConfiguration game = getGameConfig(map);
+		return game.getInt("Points-System.Points-Per-Revive");
+	}
+	
+	public int getPointsPerHelpRevive(String map) {
+		FileConfiguration game = getGameConfig(map);
+		return game.getInt("Points-System.Points-Per-HelpRevive");
+	}
+
+	public int getPointsBonus(String map) {
+		FileConfiguration game = getGameConfig(map);
+		return game.getInt("Points-System.Points-Bonus");
+	}	
+	
+	public boolean isEnabledReviveSystem(String map) {
+		FileConfiguration game = getGameConfig(map);
+		return game.getBoolean("Revive-System");
 	}
 	
 	public boolean hasCuboidZones(String map) {
@@ -1336,14 +1413,7 @@ public class GameConditions {
 	    return game.contains("Cuboid-Zones.List");
 	}
 	
-	/**
-	 * Obten el minimo de Juagadores 
-	 * @param String , el Mapa
-	 */
-	public Integer getMinPlayerMap(String map) {
-		FileConfiguration mision = getGameConfig(map);
-		return mision.getInt("Min-Player");
-	}
+	
 	 
 	//TODO TIME 
 	public void HasTimePath(String time ,String map) {
@@ -1462,14 +1532,26 @@ public class GameConditions {
 	public boolean ConditionsToStartGame(Player player,String map) {
 		if(HasMaintenance()) {
 			if(!player.isOp()) {
+				player.sendMessage(Utils.warningLineMessage(44));
+				player.sendMessage("");
+				player.sendMessage(""+ChatColor.YELLOW+ChatColor.BOLD+"       ⚠"+ChatColor.GOLD+ChatColor.BOLD+"          MANTENIMIENTO          "+ChatColor.YELLOW+ChatColor.BOLD+"⚠");
 				player.sendMessage(ChatColor.RED+"Fuera de Servicio Por Mantenimiento contacta con un Administrador.");
+				player.sendMessage(ChatColor.GRAY+"Disculpa las Molestias.");
+				player.sendMessage("");
+				player.sendMessage(Utils.warningLineMessage(44));
 				return false;
 			}else {
 				player.sendMessage(ChatColor.RED+"MineGame esta Fuera de Servicio Por Mantenimiento, Accediendo como Op.");
 			}
 		}if(isBlockedTheMap(map)) {
 			if(!player.isOp()) {
-				player.sendMessage(ChatColor.RED+"El Mapa "+map+" esta Deshabilitado.");
+				player.sendMessage(Utils.warningLineMessage(44));
+				player.sendMessage("");
+				player.sendMessage(""+ChatColor.YELLOW+ChatColor.BOLD+"       ⚠"+ChatColor.RED+ChatColor.BOLD+"          MAPA DESHABILITADO          "+ChatColor.YELLOW+ChatColor.BOLD+"⚠");
+				player.sendMessage(ChatColor.GOLD+"El Mapa "+map+" esta Deshabilitado.");
+				player.sendMessage(ChatColor.GRAY+"Disculpa las Molestias");
+				player.sendMessage("");
+				player.sendMessage(Utils.warningLineMessage(44));
 				return false;
 			}else {
 				player.sendMessage(ChatColor.RED+"El Mapa "+map+" esta Deshabilitado, Accediendo como Op.");
@@ -1565,14 +1647,20 @@ public class GameConditions {
 		 					return false;
 		 				}
 		 		 }if(mision.getBoolean("Has-Time")) {
-					 String time = mision.getString("Time");
-				    	
+		 			 	String time = mision.getString("Usage-Time");
+				    	if(time == null || time.isEmpty()){
+				    		if(player.isOp()) {
+
+		 						player.sendMessage(ChatColor.RED+"Error de Tiempo: En el Path Usage-Time esta vacio.");
+
+				    		}else {
+		 						player.sendMessage(ChatColor.RED+"Error de Tiempo: Contacta a un Administrador");
+		 					}
+				    		return false;
+				    	}
+		 			 	
 				        if(!PassedTimeMg(player,time)) return false;
 				 }
-				
-					
-					
-			 		 
 			 		boss.addPlayer(player);
 			 		return true;
 				
@@ -1778,14 +1866,39 @@ public class GameConditions {
 	}
 	
 	
-	public List <DayOfWeek> SpanishToEnglish(String days) {
+	public String daysEnglishtoSpanish(String day) {
+		String text = day.toLowerCase();
+		String english = "";
+		if(text.equals("lunes")) {
+			english = "MONDAY";
+		}else if(text.equals("martes")) {
+			english = "TUESDAY";
+		}else if(text.equals("miercoles")) {
+			english = "WEDNESDAY";
+		}else if(text.equals("jueves")) {
+			english = "THURSDAY";
+		}else if(text.equals("viernes")) {
+			english = "FRIDAY";
+		}else if(text.equals("sabado")) {
+			english = "SATURDAY";
+		}else if(text.equals("domingo")) {
+			english = "SUNDAY";
+		}else {
+			System.out.println("LOG-1 ENGLISH-SPANISH el dia "+day+" esta mal escrito o no existe se asignara el dia Lunes en Ingles");
+			english = "MONDAY";
+		}
+		
+		return english;
+	}
+	
+	public List <DayOfWeek> spanishToEnglish(String days) {
 		String[] d = days.split(" ");
 		List <DayOfWeek> l = new ArrayList<DayOfWeek>();
 		try {
 			
 			for(int i = 0; i < d.length;i++) {
 				
-			l.add(DayOfWeek.valueOf(d[i].replace("Lunes","MONDAY").replace("Martes","TUESDAY").replace("Miercoles","WEDNESDAY").replace("Jueves","THURSDAY").replace("Viernes","FRIDAY").replace("Sabado","SATURDAY").replace("Domingo","SUNDAY").toUpperCase()));
+			l.add(DayOfWeek.valueOf(daysEnglishtoSpanish(d[i])));
 			
 			}
 		}catch(IllegalArgumentException e) {
@@ -1825,7 +1938,7 @@ public class GameConditions {
 		
 		LocalDateTime lt = AddOrRemoveMg();
 		if(time.contains("/")) {
-			
+			//ST ES EL FORMATO QUE SE TOMA DE LA CONFIG Y SE RECORRE POSTERIORMENTE EN DISTINTOS IFS
 			StringTokenizer st = new StringTokenizer(time);
 		
 				if(st.countTokens() == 5) {
@@ -1889,13 +2002,13 @@ public class GameConditions {
 							}else {
 								if(lt.isBefore(t)) {
 									//antes de llegar a la fecha
-									player.sendMessage(ChatColor.GREEN+"================================================");
+									player.sendMessage(ChatColor.DARK_GREEN+"================================================");
 									player.sendMessage(""+ChatColor.GREEN+ChatColor.BOLD+"                     [PROXIMO A ABRIR] ");
 									player.sendMessage(ChatColor.AQUA+"Me temo que aun no es el Tiempo para Ingresar ");
 									player.sendMessage(""+ChatColor.DARK_RED+ChatColor.BOLD+"                [Tiempo Faltante] ");
 									player.sendMessage(ChatColor.GREEN+TimeDiferenceMg(lt, t));
 									player.sendMessage(ChatColor.AQUA+"Para que pueda estar Disponible.");
-									player.sendMessage(ChatColor.GREEN+"================================================");
+									player.sendMessage(ChatColor.DARK_GREEN+"================================================");
 									//isJoinRunning(player);
 									return false;
 								}
@@ -1905,35 +2018,37 @@ public class GameConditions {
 						 mgformatsTime();
 					 }
 				}
-		}
-		else if(!time.contains("/")){
+				
+		//ESTE IF DE ABAJO SE ENCARGA DE CHEQUEAR FECHAS QUE NO SEAN ASI 17/06/2000 
+		}else if(!time.contains("/")){
 			//REVISA SI TIENE NUMEROS EL STRING
 			Pattern p = Pattern.compile("([0-9])");
 			Matcher m = p.matcher(time);
 			
-			//si tiene un numero entra al if que es la 2 forma
+			//si tiene un numero entra al if que es la 2 forma ES LUNES MARTES 22:00 23:00
 			if(m.find()){
 				
 					List <DayOfWeek> lw = new ArrayList<DayOfWeek>();
-					List <String> le = new ArrayList<String>();
+					//List <String> lex = new ArrayList<String>();
+					String hours = "";
 					StringTokenizer st = new StringTokenizer(time);
 					
 					while(st.hasMoreTokens()) {
 						
 						String cad = st.nextToken();
 						Matcher m1 = p.matcher(cad);
-						
+						// se recorre la cadena en busca de texto y numero
 						if(m1.find()){
-							le.add(cad);
+							hours = cad;
 						}else{
-							lw.add(DayOfWeek.valueOf(cad.replace("Lunes","MONDAY").replace("Martes","TUESDAY").replace("Miercoles","WEDNESDAY").replace("Jueves","THURSDAY").replace("Viernes","FRIDAY").replace("Sabado","SATURDAY").replace("Domingo","SUNDAY").toUpperCase()));
+							lw.add(DayOfWeek.valueOf(daysEnglishtoSpanish(cad)));
 						}
 					
 					}
 				
-					String horac = le.get(0);
+					//String horac = le.get(0);
 				
-					String[] c2 = horac.split("-");
+					String[] c2 = hours.split("-");
 					String t1 = c2[0];
 	 				String t2 = c2[1];
 					String[] c3 = t1.split(":");
@@ -1945,14 +2060,16 @@ public class GameConditions {
 				    int hora2 = Integer.valueOf(c4[0]);
 			    	int minuto2 = Integer.valueOf(c4[1]);
 				
-				if(lw.contains(lt.getDayOfWeek())) {
+				
 					
 					    LocalDateTime tw4 = LocalDateTime.of(lt.getYear(), lt.getMonth(), lt.getDayOfMonth(), hora, minuto);
 						LocalDateTime tw5 = LocalDateTime.of(lt.getYear(), lt.getMonth(), lt.getDayOfMonth(), hora2, minuto2);
 						
-						if(lt.isAfter(tw4) && lt.isBefore(tw5)) {
-							return true;
-						}else {
+						if(lw.contains(lt.getDayOfWeek())) {
+							if(lt.isAfter(tw4) && lt.isBefore(tw5)) {
+								return true;
+							}
+						 }
 							StringTokenizer st2 = new StringTokenizer(time);
 							StringBuilder sb = new StringBuilder();
 							
@@ -1973,47 +2090,57 @@ public class GameConditions {
 									i++;
 							}}
 						
-							String dias = sb.toString();
-							player.sendMessage(""+ChatColor.RED+ChatColor.BOLD+"Cerrado: "+ChatColor.GOLD+"Solo funciona los dias "+dias);
+							String times = sb.toString();
+							player.sendMessage(ChatColor.AQUA+"================================================");
+							player.sendMessage(""+ChatColor.YELLOW+ChatColor.BOLD+"                     [CERRADO] ");
+							player.sendMessage(ChatColor.YELLOW+"Me temo que el Tiempo para Ingresar ya paso.");
+							player.sendMessage(""+ChatColor.RED+ChatColor.BOLD+"Cerrado: "+ChatColor.GOLD+"Solo funciona los dias "+times);
+							player.sendMessage("");
+							player.sendMessage(ChatColor.AQUA+"================================================");
 							//isJoinRunning(player);
-							return false;
-						}
-						
-				}else {
-					StringTokenizer st2 = new StringTokenizer(time);
-					StringBuilder sb = new StringBuilder();
-					
-					int men = st2.countTokens();
-					int i = 1;
-					int tm = st2.countTokens()-1; 
-					
-		
-					while(st2.hasMoreTokens()) {
-					
-						sb.append(ChatColor.GREEN+st2.nextToken()+" ");
-						
-						if(men > 1) {
 							
-							if(i == tm) {
-								sb.append(ChatColor.RED+"entre las horas ");
-							}
-							i++;
-							
-					}}
+						
+						return false;
 				
-					String dias = sb.toString();
-					player.sendMessage(""+ChatColor.RED+ChatColor.BOLD+"Cerrado: "+ChatColor.GOLD+"Solo funciona los dias "+dias);
-					//isJoinRunning(player);
-					return false;
-				}
+				
+//				else {
+//					StringTokenizer st2 = new StringTokenizer(time);
+//					StringBuilder sb = new StringBuilder();
+//					
+//					int men = st2.countTokens();
+//					int i = 1;
+//					int tm = st2.countTokens()-1; 
+//					
+//		
+//					while(st2.hasMoreTokens()) {
+//					
+//						sb.append(ChatColor.GREEN+st2.nextToken()+" ");
+//						
+//						if(men > 1) {
+//							
+//							if(i == tm) {
+//								sb.append(ChatColor.RED+"entre las horas ");
+//							}
+//							i++;
+//							
+//					}}
+//				
+//					String times = sb.toString();
+//					player.sendMessage(ChatColor.YELLOW+"================================================");
+//					player.sendMessage(""+ChatColor.YELLOW+ChatColor.BOLD+"                     [CERRADO] ");
+//					player.sendMessage(ChatColor.YELLOW+"Me temo que el Tiempo para Ingresar ya paso.");
+//					player.sendMessage(""+ChatColor.RED+ChatColor.BOLD+"Cerrado: "+ChatColor.GOLD+"Solo funciona los dias "+times);
+//					player.sendMessage("");
+//					player.sendMessage(ChatColor.YELLOW+"================================================");
+//					return false;
+//				}
 				
 			}else{
-				//si no tiene numero es forma 1
-				List <DayOfWeek> l = SpanishToEnglish(time);
+				//si no tiene numero es forma 1 OSEA SOLO DIAS LUNES MARTES MIERCOLES ETC
+				List <DayOfWeek> l = spanishToEnglish(time);
 			
 				//si contiene ejecuta el codigo chido
 				if(l.contains(lt.getDayOfWeek())) {
-				
 					return true;
 				}else{
 					//sino es muestra el cooldown
@@ -2034,11 +2161,16 @@ public class GameConditions {
 								sb.append(ChatColor.GOLD+"y ");
 							}
 							i++;
-							
+							 
 					}}
 				
-					String dias = sb.toString();
-					player.sendMessage(""+ChatColor.RED+ChatColor.BOLD+"Cerrado: "+ChatColor.GOLD+"Solo funciona los dias "+dias);
+					String times = sb.toString();
+					player.sendMessage(ChatColor.BLUE+"================================================");
+					player.sendMessage(""+ChatColor.YELLOW+ChatColor.BOLD+"                     [CERRADO] ");
+					player.sendMessage(ChatColor.YELLOW+"Me temo que el Tiempo para Ingresar ya paso.");
+					player.sendMessage(""+ChatColor.RED+ChatColor.BOLD+"Cerrado: "+ChatColor.GOLD+"Solo funciona los dias "+times);
+					player.sendMessage("");
+					player.sendMessage(ChatColor.BLUE+"================================================");
 					//isJoinRunning(player);
 					return false;
 				}
@@ -2817,7 +2949,7 @@ public class GameConditions {
  	}
  	
  	public int getDamageInfo(String name) {
-	   	 return TransformPosOrNeg(plugin.getPlayerInfoPoo().get(ConvertStringToPlayerAlone(name)).getGamePoints().getDamage());
+	   	 return plugin.getPlayerInfoPoo().get(ConvertStringToPlayerAlone(name)).getGamePoints().getDamage();
 	}
  	
 	public int TransformPosOrNeg(int i) {
@@ -3049,10 +3181,9 @@ public class GameConditions {
    }	 
    
    
-   public int loadCountdownMap() {
-		
-		FileConfiguration config = plugin.getConfig();
-		return config.getInt("CountDownPreLobby");
+   public int loadCountdownMap(String map) {
+	    FileConfiguration game = getGameConfig(map);
+		return game.getInt("CountDownPreLobby");
   }	 
    
 	   

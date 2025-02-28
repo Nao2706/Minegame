@@ -12,6 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.nao.cosmetics.mg.RankPlayer;
 import me.nao.generalinfo.mg.GameConditions;
 import me.nao.generalinfo.mg.GameInfo;
 import me.nao.generalinfo.mg.ObjetivesMG;
@@ -256,9 +257,13 @@ public class PHMiniGame extends PlaceholderExpansion{
         	
         	return 	getObjetiveCurrentCompleteValue(split[0], split[1]);
  
-        }else if(identifier.startsWith("playerlvl")){
+        }else if(identifier.startsWith("level")){
         	//mg_objetive_Tutorial,Puerta1
         	return 	getPlayerlvlmg(player);
+ 
+        }else if(identifier.startsWith("prestige")){
+        	//mg_objetive_Tutorial,Puerta1
+        	return 	getPlayerprestigemg(player);
  
         }
         
@@ -341,7 +346,20 @@ public class PHMiniGame extends PlaceholderExpansion{
 	}
 	
 	
-	
+	public String getPlayerprestigemg(Player player) {
+		FileConfiguration lvl = plugin.getPoints();
+		int prestigelvl = 0;
+		RankPlayer rp = new RankPlayer(plugin);
+		String text = "";
+		if(lvl.contains("Players."+player.getName())) {
+			prestigelvl = lvl.getInt("Players."+player.getName()+".Prestige");
+			text = rp.getRankPrestigePlaceHolder(prestigelvl);
+		}else {
+			text = rp.getRankPrestigePlaceHolder(0);
+		}
+		
+		return text;
+	}
 	
 	
 	

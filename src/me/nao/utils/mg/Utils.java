@@ -18,6 +18,18 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class Utils {
 
+	public static String warningLineMessage(int amount) {
+		String text = "/";
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0 ; i < amount ; i++) {
+			if(i % 2 == 0) {
+				sb.append(""+ChatColor.YELLOW+ChatColor.BOLD+text);
+			}else {
+				sb.append(""+ChatColor.BLACK+ChatColor.BOLD+text);
+			}
+		}
+		return sb.toString();
+	}
 	
 	public static String colorText(String text) {
 		return ChatColor.translateAlternateColorCodes('&',text) ;

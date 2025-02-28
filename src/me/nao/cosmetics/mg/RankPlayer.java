@@ -110,34 +110,34 @@ public class RankPlayer {
 		
 			
 				if(lvl == 0) {
-					return rank = Utils.colorText("&7&l[&8&lH&7&l] ");
+					return rank = Utils.colorText("&7&l[&8&lNM&7&l] ");
 					
 				}else if(lvl == 1) {
-					return rank =  Utils.colorText("&7&l[&f&lG&7&l] ");
+					return rank =  Utils.colorText("&7&l[&f&lEK&7&l] ");
 					
 				}else if(lvl == 2) {
-					return rank =  Utils.colorText("&7&l[&e&lF&7&l] ");
+					return rank =  Utils.colorText("&7&l[&e&lSG&7&l] ");
 					
 				}else if(lvl == 3) {
-					return rank =  Utils.colorText("&7&l[&c&lE&7&l] ");
+					return rank =  Utils.colorText("&7&l[&c&lCL&7&l] ");
 					
 				}else if(lvl == 4) {
-					 rank =  Utils.colorText("&7&l[&4&lD&7&l] ");
+					 rank =  Utils.colorText("&7&l[&4&lAE&7&l] ");
 					 
 				}else if(lvl == 5) {
-					 rank =  Utils.colorText("&7&l[&a&lC&7&l] ");
+					 rank =  Utils.colorText("&7&l[&a&lTO&7&l] ");
 					 
 				}else if(lvl == 6) {
-					 rank =  Utils.colorText("&7&l[&2&lB&7&l] ");
+					 rank =  Utils.colorText("&7&l[&2&lLW&7&l] ");
 					 
 				}else if(lvl == 7) {
-					 rank =  Utils.colorText("&7&l[&b&lA&7&l] ");
+					 rank =  Utils.colorText("&7&l[&b&lIK&7&l] ");
 					 
 				}else if(lvl == 7) {
-					 rank =  Utils.colorText("&7&l[&5&l&nS+&7&l] ");
+					 rank =  Utils.colorText("&7&l[&5&l&nEC&7&l] ");
 					 
 				}else if(lvl == 9) {
-					 rank =  Utils.colorText("&7&l[&1&l&nSS+&7&l] ");
+					 rank =  Utils.colorText("&7&l[&1&l&nMC&7&l] ");
 					 
 				}else if(lvl == 10) {
 					 rank = Utils.colorText("&7&l[&6&l&nSSS+&7&l] ");
@@ -148,7 +148,48 @@ public class RankPlayer {
 	}
 	
 	
-	
+	public String getRankPrestigePlaceHolder(int lvl) {
+		
+		String rank = "";
+		
+			
+				if(lvl == 0) {
+					return rank = "NM";
+					
+				}else if(lvl == 1) {
+					return rank =  "EK";
+					
+				}else if(lvl == 2) {
+					return rank = "SG";
+					
+				}else if(lvl == 3) {
+					return rank = "CL";
+					
+				}else if(lvl == 4) {
+					 rank =  "AE";
+					 
+				}else if(lvl == 5) {
+					 rank = "TO";
+					 
+				}else if(lvl == 6) {
+					 rank = "LW";
+					 
+				}else if(lvl == 7) {
+					 rank =  "IK";
+					 
+				}else if(lvl == 7) {
+					 rank =  "EC";
+					 
+				}else if(lvl == 9) {
+					 rank =  "MC";
+					 
+				}else if(lvl == 10) {
+					 rank = "SSS+";
+					 
+				}
+		
+			return rank;
+	}
 	
 	
 	

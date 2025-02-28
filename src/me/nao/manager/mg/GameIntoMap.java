@@ -603,12 +603,12 @@ public class GameIntoMap {
 		int puntos3 = gp.getRevive();
 		int puntos4 = gp.getHelpRevive();
 		int puntos5 = gp.getDamage();
-		player.sendMessage(""+ChatColor.YELLOW+ChatColor.BOLD+" [PUNTUACION ACTUAL]");
-		player.sendMessage(""+ChatColor.GREEN+ChatColor.BOLD+" Eliminaciones : "+ChatColor.YELLOW+ChatColor.BOLD+puntos);
-		player.sendMessage(""+ChatColor.GREEN+ChatColor.BOLD+" Muertes : "+ChatColor.YELLOW+ChatColor.BOLD+puntos2);
-		player.sendMessage(""+ChatColor.GREEN+ChatColor.BOLD+" Revivido : "+ChatColor.YELLOW+ChatColor.BOLD+puntos3);
-		player.sendMessage(""+ChatColor.GREEN+ChatColor.BOLD+" Ayudas a Revivir : "+ChatColor.YELLOW+ChatColor.BOLD+puntos4);
-		player.sendMessage(""+ChatColor.GREEN+ChatColor.BOLD+" Daño : "+ChatColor.YELLOW+ChatColor.BOLD+puntos5);
+		player.sendMessage(""+ChatColor.YELLOW+ChatColor.BOLD+" [PUNTOS DE LA PARTIDA]");
+		player.sendMessage(""+ChatColor.GREEN+" Eliminaciones : "+ChatColor.YELLOW+puntos);
+		player.sendMessage(""+ChatColor.GREEN+" Muertes : "+ChatColor.YELLOW+puntos2);
+		player.sendMessage(""+ChatColor.GREEN+" Revivido : "+ChatColor.YELLOW+puntos3);
+		player.sendMessage(""+ChatColor.GREEN+" Ayudas a Revivir : "+ChatColor.YELLOW+puntos4);
+		player.sendMessage(""+ChatColor.GREEN+" Daño : "+ChatColor.YELLOW+puntos5);
 		
 	}
 	

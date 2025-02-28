@@ -364,7 +364,7 @@ public class ResistenceTemp {
 		if(!l.isEmpty()) {
 			for(Location loc : l) {
 				
-				if(player.getLocation().distance(loc) > rango) continue;
+				if(player.getLocation().distance(loc) <= rango) {
 				
 				Block a = loc.getBlock();
 				Block b = a.getRelative(0,-1, 0);
@@ -418,7 +418,7 @@ public class ResistenceTemp {
 					Bruja(a.getWorld(),a.getLocation().getBlockX(),a.getLocation().getBlockY(),a.getLocation().getBlockZ());
 				}
 				
-				
+			   }
 			}
 		}
 	}
@@ -438,7 +438,7 @@ public class ResistenceTemp {
 			if(!l.isEmpty()) {
 				for(Location loc : l) {
 					
-					if(player.getLocation().distance(loc) > rango) continue;
+					if(player.getLocation().distance(loc) <= rango) {
 					
 					Block a = loc.getBlock();
 					Block b = a.getRelative(0,-1, 0);
@@ -480,6 +480,7 @@ public class ResistenceTemp {
 						 a.getWorld().dropItem(a.getLocation().add(0.5, 1, 0.5), new ItemStack(Material.GOLD_BLOCK,RandomBetweenValue(1, 100)));
 					}
 					
+				  }
 					
 				}
 			}

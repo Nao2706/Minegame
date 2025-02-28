@@ -506,6 +506,7 @@ public class Comandsmg implements CommandExecutor{
 				    return true;
 		    	}else if(args[0].equalsIgnoreCase("maintenance")){
 		    		
+		    		
 					FileConfiguration config = plugin.getConfig();
 					if(config.getBoolean("Maintenance")) {
 						config.set("Maintenance", false);
@@ -1578,6 +1579,7 @@ public class Comandsmg implements CommandExecutor{
 								int point4 = points1.getInt("Players."+player.getName()+".Help-Revive");
 								int point5 = points1.getInt("Players."+player.getName()+".Wins");
 								int point6 = points1.getInt("Players."+player.getName()+".Loses");
+								int prestige = points1.getInt("Players."+player.getName()+".Prestige");
 								
 								if (message.getBoolean("Message-My-Points.message")) {
 									List<String> messagep = message.getStringList("Message-My-Points.message-points-texto");
@@ -1596,7 +1598,8 @@ public class Comandsmg implements CommandExecutor{
 												 .replace("%porcent%",pm.Porcentage(xp,refer))
 												 .replace("%lvl%",String.valueOf(lvl))
 												 .replace("%wins%",String.valueOf(point5))
-												 .replace("%loses%",String.valueOf(point6))
+												 .replace("%loses%",String.valueOf(point6)
+												 .replace("%prestige%",String.valueOf(prestige)))
 												 
 												 
 												 
@@ -1619,7 +1622,10 @@ public class Comandsmg implements CommandExecutor{
 					return true;
 					
 				}else if(args[0].equalsIgnoreCase("reload")) {
-					if(player.isOp()) {
+					if(!player.isOp()) {
+						player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes Permiso para usar ese comando");
+						return true;
+					  }
 						//mg reload arena
 						
 						FileConfiguration config = plugin.getConfig();
@@ -1643,10 +1649,7 @@ public class Comandsmg implements CommandExecutor{
 						}else {
 							AllReload(player);
 						}
-					}else {
-						player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes Permiso para usar ese comando");
-						
-					}
+					
 					return true;
 					
 				}else if(args[0].equalsIgnoreCase("message") ) {
@@ -2313,7 +2316,10 @@ public class Comandsmg implements CommandExecutor{
 				
 				return true;
 			}else if (args[0].equalsIgnoreCase("delete")) {
-					if(player.isOp()) {
+					if(!player.isOp()) {
+						player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese Comando. ");
+						return true;
+					 }
 						if (args.length == 2) {
 							String name = args[1];
 							FileConfiguration menu = plugin.getMenuItems();
@@ -2333,15 +2339,16 @@ public class Comandsmg implements CommandExecutor{
 						}else {
 							player.sendMessage(plugin.nombre+ChatColor.GREEN+" Usa /mg delete <nombre-yml> ");
 						}
-					}else {
-						player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese Comando. ");
-					}
+					
 					
 					
 					return true;
 					
 				}else if (args[0].equalsIgnoreCase("show-maps") ) {
-					if(player.isOp()) {
+					if(!player.isOp()) {
+						player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese Comando.");
+						return true;
+					 }
 					
 						FileConfiguration config = plugin.getConfig();
 						List<String> ac = config.getStringList("Maps-Created.List");
@@ -2357,10 +2364,7 @@ public class Comandsmg implements CommandExecutor{
 						}
 					
 					
-					}else {
-						player.sendMessage(plugin.nombre+ChatColor.RED+"No tienes permiso para usar ese comando");
-						
-					}
+					
 					
 					return true;
 					
@@ -2368,6 +2372,7 @@ public class Comandsmg implements CommandExecutor{
 					if(!player.isOp()) {
 						
 						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
 					}
 					if (args.length == 2) {
 						// /c add n p
@@ -2409,6 +2414,11 @@ public class Comandsmg implements CommandExecutor{
 					
 				}else if(args[0].equalsIgnoreCase("reportlogs")) {
 					 //mg reportlogs nao 1
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					
 					if(args.length == 2) {
 							String name = args[1];
@@ -2428,6 +2438,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("isban")) {
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					if (args.length == 2) {
 						String name = args[1];
 						ReportsManager cool = new ReportsManager(plugin);
@@ -2541,7 +2556,11 @@ public class Comandsmg implements CommandExecutor{
 				 		 return true;
 					  }else if(args[0].equalsIgnoreCase("timegame")) {
 							//mg time Tutorial set 0-1-2
-				 		  
+							if(!player.isOp()) {
+								
+								player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+								return true;
+							}
 				 		 if(args.length == 4) {
 				 			 String map = args[1];
 				 			 String type  = args[2];
@@ -2601,6 +2620,11 @@ public class Comandsmg implements CommandExecutor{
 					
 				 	  }else if(args[0].equalsIgnoreCase("spawnzombi")) {
 				 		//H Z BZ EZ
+							if(!player.isOp()) {
+								
+								player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+								return true;
+							}
 						//mg spawnzombi wolrd,12,23,34 50 H
 				 		 if(args.length == 4) {
 				 			 String location = args[1];
@@ -2650,18 +2674,23 @@ public class Comandsmg implements CommandExecutor{
 					
 					  }else if(args[0].equalsIgnoreCase("setlobby")) {
 							
-							if(player.isOp()) {
+							if(!player.isOp()) {
+								
+								player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+								return true;
+							}
 						
 								c.setServerLobby(player);
 								
-					       	}else {
-								player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese comando");
-								
-							}
+					       
 							return true;
 							
 					}else if(args[0].equalsIgnoreCase("setprelobby")) {
-							if(player.isOp()) {
+						if(!player.isOp()) {
+							
+							player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+							return true;
+						}
 								if (args.length >= 2) {
 									
 								String mapname = args[1];
@@ -2671,16 +2700,18 @@ public class Comandsmg implements CommandExecutor{
 								}else {
 									player.sendMessage(plugin.nombre+ChatColor.GREEN+"escribe /mg setprelobby <mapa>");
 								}
-							}else {
-								player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese comando");
-								
-							}
+							
 						return true;
 					
 					}else if(args[0].equalsIgnoreCase("setspawn")) {
 						
-							if(player.isOp()) {
-								if (args.length >= 2) {
+								if(!player.isOp()) {
+									
+									player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+									return true;
+								}
+								
+								if(args.length >= 2) {
 								
 									String mapname = args[1];
 							   
@@ -2689,21 +2720,18 @@ public class Comandsmg implements CommandExecutor{
 								}else {
 									player.sendMessage(plugin.nombre+ChatColor.GREEN+"escribe /mg setspawn <mapa>");
 								}
-							}else {
-								player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese comando");
-								
-							}
+							
 						
 						return true;
 						
 					}else if(args[0].equalsIgnoreCase("setspawn-infected")) {
 							
 							if(player.isOp()) {
-								if (args.length == 2) {
+								if(args.length == 2) {
 									String name = args[1];
 								
-							   InfectedGame in = new InfectedGame(plugin);
-							   in.setArenaSpawnInfectado(name, player);
+									InfectedGame in = new InfectedGame(plugin);
+									in.setArenaSpawnInfectado(name, player);
 							
 								}else {
 									player.sendMessage(plugin.nombre+ChatColor.GREEN+"escribe /mg setspawn-infected <mapa>");
@@ -2738,7 +2766,11 @@ public class Comandsmg implements CommandExecutor{
 				
 			}else if(args[0].equalsIgnoreCase("setspawn-end")) {
 					
-					if(player.isOp()) {
+						if(!player.isOp()) {
+							
+							player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+							return true;
+						}
 						if (args.length == 2) {
 							
 							String mapname = args[1];
@@ -2748,16 +2780,17 @@ public class Comandsmg implements CommandExecutor{
 						}else {
 							player.sendMessage(plugin.nombre+ChatColor.GREEN+"escribe /mg setspawn <mapa>");
 						}
-					}else {
-						player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese comando");
-						
-					}
+					
 				
 				return true;
 				
 			}else if(args[0].equalsIgnoreCase("setspawn-spectator")) {
 					
-					if(player.isOp()) {
+						if(!player.isOp()) {
+							
+							player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+							return true;
+						}
 						if (args.length == 2) {
 							
 							String mapname = args[1];
@@ -2767,10 +2800,7 @@ public class Comandsmg implements CommandExecutor{
 						}else {
 							player.sendMessage(plugin.nombre+ChatColor.GREEN+"escribe /mg setspawn-spectator <mapa>");
 						}
-					}else {
-						player.sendMessage(plugin.nombre+ChatColor.RED+"  No tienes permiso para usar ese comando");
-						
-					}
+					
 				
 				return true;
 				
@@ -2850,6 +2880,12 @@ public class Comandsmg implements CommandExecutor{
 				
 			}else if(args[0].equalsIgnoreCase("addtag")) {
 				
+				if(!player.isOp()) {
+					
+					player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+					return true;
+				}
+				
 				if (args.length == 3) {
 					// /c add n p
 					//mg setlife nao 2
@@ -2879,6 +2915,12 @@ public class Comandsmg implements CommandExecutor{
 				return true;
 			}else if(args[0].equalsIgnoreCase("removetag")) {
 				
+				if(!player.isOp()) {
+					
+					player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+					return true;
+				}
+				
 				if (args.length == 3) {
 					// /c add n p
 					//mg setlife nao 2
@@ -2907,6 +2949,12 @@ public class Comandsmg implements CommandExecutor{
 				}
 				return true;
 			}else if(args[0].equalsIgnoreCase("showtags")) {
+				
+				if(!player.isOp()) {
+					
+					player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+					return true;
+				}
 				
 				if (args.length == 2) {
 					// /c add n p
@@ -2938,7 +2986,12 @@ public class Comandsmg implements CommandExecutor{
 					player.sendMessage(plugin.nombre+ChatColor.GREEN+" Usa /mg showtags <nombre> ");
 				}
 				return true;
-			}else if(args[0].equalsIgnoreCase("enabled")&& player.isOp()) {
+			}else if(args[0].equalsIgnoreCase("enabled")) {
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					if (args.length >= 2) {
 						
 						FileConfiguration config = plugin.getConfig();
@@ -2968,7 +3021,14 @@ public class Comandsmg implements CommandExecutor{
 				
 					return true;
 					
-				}else if(args[0].equalsIgnoreCase("disabled")&& player.isOp()) {
+				}else if(args[0].equalsIgnoreCase("disabled")) {
+					
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
+					
 					if (args.length == 2) {
 						String mapname = args[1];
 						FileConfiguration config = plugin.getConfig();
@@ -3093,13 +3153,23 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("zombi")) {
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
+					
 					player.getInventory().addItem(Items.SPAWNBABYZOMBI.getValue());
 					player.getInventory().addItem(Items.SPAWNELITEZOMBI.getValue());
 					player.getInventory().addItem(Items.SPAWNZOMBI.getValue());
 					player.getInventory().addItem(Items.SPAWNHORDEZOMBI.getValue());
 					return true;
 				}else if(args[0].equalsIgnoreCase("dbsave")) {
-					
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					try {
 						SQLInfo.SavePlayerInventory(plugin.getMySQL(), player.getUniqueId(), player.getName(), BukkitSerialization.serializar(player.getInventory().getContents()),player);
 					} catch (IOException e) {
@@ -3110,7 +3180,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("dbget")) {
-					
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					try {
 						SQLInfo.GetPlayerInventory(plugin.getMySQL(), player.getUniqueId(), player);
 						player.sendMessage(ChatColor.GREEN+"Inventario salvado recuperado.");
@@ -3121,7 +3195,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("dbcheck")) {
-					
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					try {
 						if(args.length == 2) { 
 							String user = args[1];
@@ -3155,7 +3233,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("dbdelete")) {
-					
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					//mg dbdelete NAO
 					if(args.length == 2) { 
 						String user = args[1];
@@ -3271,7 +3353,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("generator")) {
-
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					if(args.length == 2) {
 						String mapname = args[1];
 						MapSettings ms = new MapSettings(plugin);
@@ -3283,7 +3369,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("delgenerator")) {
-
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					if(args.length == 2) {
 						String mapname = args[1];
 						MapSettings ms = new MapSettings(plugin);
@@ -3295,7 +3385,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("mobgenerator")) {
-
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					if(args.length == 2) {
 						String mapname = args[1];
 						MapSettings ms = new MapSettings(plugin);
@@ -3307,7 +3401,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("delmobgenerator")) {
-
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					if(args.length == 2) {
 						String mapname = args[1];
 						MapSettings ms = new MapSettings(plugin);
@@ -3319,6 +3417,12 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("maintenance")) {
+					
+					if(!player.isOp()) {
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar ese Comando.");
+						return true;
+		    		}
+					
 					FileConfiguration config = plugin.getConfig();
 					if(config.getBoolean("Maintenance")) {
 						config.set("Maintenance", false);
@@ -3364,7 +3468,13 @@ public class Comandsmg implements CommandExecutor{
 					}
 					
 					return true;
-				}else if (args[0].equalsIgnoreCase("set-life") && player.isOp()) {
+				}else if (args[0].equalsIgnoreCase("set-life")) {
+					
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					try {
 						if (args.length == 3) {
 							// /c add n p
@@ -3400,7 +3510,7 @@ public class Comandsmg implements CommandExecutor{
 				
 				return true;
 			  }else if(args[0].equalsIgnoreCase("tp")){
-				  
+				  	
 					if(args.length == 9) {
 						String target = args[1];
 						String map = args[2];
@@ -3496,6 +3606,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("ban") || args[0].equalsIgnoreCase("kick")  || args[0].equalsIgnoreCase("tempban")  || args[0].equalsIgnoreCase("warn") || args[0].equalsIgnoreCase("pardon")){
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
 					if(args.length >= 3) {
 						 ReportsManager rm = new ReportsManager(plugin);
 			        	 rm.IdentifierReports(player,args);
@@ -3519,6 +3634,12 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if(args[0].equalsIgnoreCase("objetive")){
+					if(!player.isOp()) {
+						
+						player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+						return true;
+					}
+					
 					if(args.length == 4) {
 						 
 						
@@ -3695,7 +3816,11 @@ public class Comandsmg implements CommandExecutor{
 					
 					return true;
 				}else if (args[0].equalsIgnoreCase("stop")) {
-				if(player.isOp()) {
+						if(!player.isOp()) {
+							
+							player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+							return true;
+						}
 						if (args.length == 3) {
 							String name = args[1];
 							try {
@@ -3717,15 +3842,15 @@ public class Comandsmg implements CommandExecutor{
 							
 						 }
 						
-				}else {
-					player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese comando");
-					
-				}
 				
 				return true;
 				
 			}else if (args[0].equalsIgnoreCase("getInv")) {
-				if(player.isOp()) {
+						if(!player.isOp()) {
+							
+							player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+							return true;
+						}
 						if (args.length == 2) {
 							String name = args[1];
 						
@@ -3737,15 +3862,16 @@ public class Comandsmg implements CommandExecutor{
 							.sendMessage(plugin.nombre+ChatColor.GREEN+" Usa /mg getInv <kit> ");
 						 }
 						
-				}else {
-					player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese comando");
-					
-				}
+				
 				
 				return true;
 				
 			}else if (args[0].equalsIgnoreCase("saveInv")) {
-				if(player.isOp()) {
+						if(!player.isOp()) {
+							
+							player.sendMessage(ChatColor.RED+"No tienes permiso para usar este comando.");
+							return true;
+						}
 						if (args.length == 2) {
 							String name = args[1];
 				
@@ -3758,10 +3884,7 @@ public class Comandsmg implements CommandExecutor{
 							.sendMessage(plugin.nombre+ChatColor.GREEN+" Usa /mg saveInv <kit> ");
 						 }
 						
-				}else {
-					player.sendMessage(plugin.nombre+ChatColor.RED+" No tienes permiso para usar ese comando");
-					
-				}
+				
 				
 				return true;
 			}else if(args[0].equalsIgnoreCase("start-timer")) {

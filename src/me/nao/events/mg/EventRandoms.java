@@ -1371,9 +1371,14 @@ public class EventRandoms implements Listener{
 				//
 				Entity ent = e.getEntity();
 				
-				if(ent.getCustomName() != null && ChatColor.stripColor(ent.getCustomName()).equals("Mina Explosiva")
-						|| ChatColor.stripColor(ent.getCustomName()).equals("Ataque Aereo") || ChatColor.stripColor(ent.getCustomName()).equals("TNT")) {
-					e.blockList().clear();
+				if(ent.getCustomName() != null ){
+					if(ChatColor.stripColor(ent.getCustomName()).equals("Mina Explosiva")
+						|| ChatColor.stripColor(ent.getCustomName()).equals("Ataque Aereo") 
+						|| ChatColor.stripColor(ent.getCustomName()).equals("TNT")
+						|| ChatColor.stripColor(ent.getCustomName()).equals("Suicida")) {
+					   e.blockList().clear();
+					  return;
+					}
 				}
 				
 				 

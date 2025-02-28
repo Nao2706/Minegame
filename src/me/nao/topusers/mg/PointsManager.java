@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 
 import me.nao.cooldown.mg.Cooldown;
 import me.nao.cosmetics.mg.Fireworks;
+import me.nao.generalinfo.mg.GameInfo;
 import me.nao.generalinfo.mg.GamePoints;
 import me.nao.generalinfo.mg.PlayerInfo;
 import me.nao.main.mg.Minegame;
@@ -42,6 +43,7 @@ public class PointsManager {
 	
 			FileConfiguration points = plugin.getPoints();
 			PlayerInfo pl = plugin.getPlayerInfoPoo().get(player);
+			GameInfo gi = plugin.getGameInfoPoo().get(pl.getMapName());
 			GamePoints gp = pl.getGamePoints();
 			if(points.contains("Players."+player.getName()+".Kills")) {
 				int point = points.getInt("Players."+player.getName()+".Kills");
@@ -55,7 +57,7 @@ public class PointsManager {
 				points.set("Players."+player.getName()+".Revive",point3+gp.getRevive());
 				points.set("Players."+player.getName()+".Help-Revive",point4+gp.getHelpRevive());
 				saveAll();
-				calcReferenceExp(player,calcExp(player, gp));
+				calcReferenceExp(player,calcExp(player, gp, gi));
 			}else {
 				
 				
@@ -73,14 +75,14 @@ public class PointsManager {
 				
 				saveAll();
 				
-				calcReferenceExp(player,calcExp(player, gp));
+				calcReferenceExp(player,calcExp(player, gp,gi));
 			}
 		
 			
 		}
 		
 		
-		public int calcExp(Player player,GamePoints gp) {
+		public int calcExp(Player player,GamePoints gp,GameInfo gi) {
 			//k 200 hr 100 deads -200 revive 50 
 			int kills = gp.getKills();
 			int helpr = gp.getHelpRevive();
@@ -88,13 +90,14 @@ public class PointsManager {
 			int revive = gp.getRevive();
 			int total ;
 			//2
-			kills = kills * 25;
-			helpr = helpr * 15;
-			deads = deads * 30;
-			revive = revive * 10;
+			kills = kills * gi.getPointsPerKills();
+			helpr = helpr * gi.getPointsPerHelpRevive();
+			deads = deads * gi.getPointsPerDeads();
+			revive = revive * gi.getPointsPerRevive();
 			
 			total = kills+helpr+revive-deads;
 		
+			total = (gi.getPointsBonus() == 0) ? total : total * gi.getPointsBonus();
 			
 			if(total <= 0) {
 				player.sendMessage(ChatColor.RED+"XP Ganada: "+ChatColor.GOLD+0+ChatColor.RED+" tuviste muchas muertes.");
@@ -129,6 +132,9 @@ public class PointsManager {
 				return;
 			}
 			
+			PlayerInfo pl = plugin.getPlayerInfoPoo().get(player);
+			GameInfo gi = plugin.getGameInfoPoo().get(pl.getMapName());
+			
 			long refer = points.getInt("Players."+player.getName()+".Reference-Xp");
 			long xp = points.getInt("Players."+player.getName()+".Xp");
 			int streak = points.getInt("Players."+player.getName()+".Streaks");
@@ -140,17 +146,19 @@ public class PointsManager {
 			//player.sendMessage("Has Ganado "+val+" de Xp para el modo Ranked.");
 			player.sendMessage("");
 			player.sendMessage(""+ChatColor.RED+ChatColor.BOLD+"| INFORME DE PROGRESO |");
-			
+			player.sendMessage(Utils.colorTextChatColor("&6Este Mapa da la Siguiente XP por Cada&f:"));
+			player.sendMessage(Utils.colorTextChatColor("&cKill: &a"+gi.getPointsPerKills()+" &cMuerte: &a"+gi.getPointsPerDeads()+" &cRevivir: &a"+gi.getPointsPerRevive()+" &cAyudara Revivir: &a"+gi.getPointsPerHelpRevive()));
+			player.sendMessage(Utils.colorTextChatColor("&aEl Bonus de este Mapa es: &6"+gi.getPointsBonus()));
 			player.spigot().sendMessage(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.DARK_GRAY+"- "+net.md_5.bungee.api.ChatColor.GRAY+"Xp Guardada: "+net.md_5.bungee.api.ChatColor.GREEN+xp,"La Experiencia que tenias.", net.md_5.bungee.api.ChatColor.GOLD));
 			player.spigot().sendMessage(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.DARK_GRAY+"- "+net.md_5.bungee.api.ChatColor.GREEN+"Xp Ganada: "+net.md_5.bungee.api.ChatColor.GREEN+val,"La Experiencia Conseguiste.", net.md_5.bungee.api.ChatColor.GOLD));
-			player.spigot().sendMessage(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.DARK_GRAY+"- "+net.md_5.bungee.api.ChatColor.DARK_PURPLE+"Racha: "+net.md_5.bungee.api.ChatColor.GOLD+streak,"La Racha que Conseguiste.", net.md_5.bungee.api.ChatColor.GOLD));
+			player.spigot().sendMessage(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.DARK_GRAY+"- "+net.md_5.bungee.api.ChatColor.DARK_PURPLE+"Racha: "+net.md_5.bungee.api.ChatColor.GOLD+streak+net.md_5.bungee.api.ChatColor.RED+" x "+net.md_5.bungee.api.ChatColor.GOLD+net.md_5.bungee.api.ChatColor.BOLD+"100","La Racha que Conseguiste.", net.md_5.bungee.api.ChatColor.GOLD));
 			ComponentBuilder cb = new ComponentBuilder();
 			cb.append(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.GOLD+"Resultado: ","El Calculo de la Experiencia.", net.md_5.bungee.api.ChatColor.GREEN));
 			cb.append(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.GRAY+String.valueOf(xp),"Experiencia Guardada.", net.md_5.bungee.api.ChatColor.GREEN));
 			cb.append(Utils.sendTextComponent(net.md_5.bungee.api.ChatColor.RED+" + "));
 			cb.append(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.GREEN+String.valueOf(val),"Experiencia Ganada.", net.md_5.bungee.api.ChatColor.GREEN));
 			cb.append(Utils.sendTextComponent(net.md_5.bungee.api.ChatColor.RED+" x "));
-			cb.append(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.RED+String.valueOf(streak),"Las Rachas Multiplican el Puntaje.", net.md_5.bungee.api.ChatColor.GOLD));
+			cb.append(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.RED+String.valueOf(streak),"Las Rachas Multiplican el Puntaje por 100.", net.md_5.bungee.api.ChatColor.GOLD));
 			cb.append(Utils.sendTextComponent(net.md_5.bungee.api.ChatColor.RED+" = "));
 			cb.append(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.DARK_PURPLE+String.valueOf(totalxp),"Total de Puntos.", net.md_5.bungee.api.ChatColor.GOLD));
 
@@ -201,9 +209,17 @@ public class PointsManager {
 		//no tiene muchas condiciones por que esas van en otro lado CommandsMessage
 		public void prestigeMg(Player player) {
 			
-				FileConfiguration points = plugin.getPoints();
+			FileConfiguration points = plugin.getPoints();
 			
-				int prestige = points.getInt("Players."+player.getName()+".Prestige");
+			int savelvl = points.getInt("Players."+player.getName()+".Level");
+			int prestige = points.getInt("Players."+player.getName()+".Prestige");
+			
+			//360 sera el tope de niveles , ultimo nivel 359 : pide 1223099 de xp para 360
+			
+			if(savelvl == 360) {
+				player.sendMessage(ChatColor.DARK_PURPLE+"Has alcanzado el Nivel Maximo ahora puedes Acceder al Prestigio.");
+				return;
+			}
 			
 				points.set("Players."+player.getName()+".Level",0);
 				points.set("Players."+player.getName()+".Xp",0);

@@ -5,7 +5,7 @@ public class GamePoints {
 	
 	
 	private int kills , deads , revive, helprevive, damage;
-	
+
 	
 	/**
 	 * Clase destinada a almacenar datos de Jugador Kills Deads Revive HelpRevive Damage
