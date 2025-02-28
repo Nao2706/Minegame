@@ -625,7 +625,29 @@ public class Comandsmg implements CommandExecutor{
 				
 						return true;
 				
-			 	  }else if (args[0].equalsIgnoreCase("lparticle")) {
+			 	  }else if(args[0].equalsIgnoreCase("querylevel")) {
+	          			
+	          			//mg invite Tutorial
+	        			if(args.length == 2) {
+	        				
+	        				int value = Integer.valueOf(args[1]);
+	        				
+	        				if(value <= 359) {
+	        					PointsManager pm = new PointsManager(plugin);
+	        					Bukkit.getConsoleSender().sendMessage(Utils.colorTextChatColor("&c-&6El Nivel 6a"+value+" &6requiere de &a"+pm.xpPerLvl(1000, (1 + 2 / 100.0), value)+" &6XP para el &fNivel: &5"+(value+1)));
+	        				}else {
+	        					Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+"Solo hay 360 niveles.");
+	        				}
+	        				
+	        				
+	    				}else{
+	    					Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+"Usa /mg querylevel <level> example /mg querylevel 1");
+	    				}	
+	 
+	        			
+	        			return true;
+	        			
+	        		}else if (args[0].equalsIgnoreCase("lparticle")) {
 			 		  //mg lparticle world 124 34 546 234 67 457 smoke
 			 		  
 			 		  if(args.length == 9) {
@@ -2143,9 +2165,32 @@ public class Comandsmg implements CommandExecutor{
         		}else if(args[0].equalsIgnoreCase("upgradeprestige")) {
           			
           			//mg invite Tutorial
+        				
           				PointsManager pm = new PointsManager(plugin);
           				pm.prestigeMg(player);
           		
+        			
+        			return true;
+        			
+        		}else if(args[0].equalsIgnoreCase("querylevel")) {
+          			
+          			//mg invite Tutorial
+        			if(args.length == 2) {
+        				
+        				int value = Integer.valueOf(args[1]);
+        				
+        				if(value <= 359) {
+        					PointsManager pm = new PointsManager(plugin);
+              				player.sendMessage(Utils.colorTextChatColor("&c-&6El Nivel 6a"+value+" &6requiere de &a"+pm.xpPerLvl(1000, (1 + 2 / 100.0), value)+" &6XP para el &fNivel: &5"+(value+1)));
+        				}else {
+        					player.sendMessage(ChatColor.GREEN+"Solo hay 360 niveles.");
+        				}
+        				
+        				
+    				}else{
+    					player.sendMessage(ChatColor.GREEN+"Usa /mg querylevel <level> example /mg querylevel 1");
+    				}	
+ 
         			
         			return true;
         			

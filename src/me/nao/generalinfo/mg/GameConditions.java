@@ -147,8 +147,14 @@ public class GameConditions {
 				sendMessageToUsersOfSameMapLessPlayer(player, ChatColor.WHITE+"El jugador "+ChatColor.GREEN+player.getName()+ChatColor.WHITE+" salio del Modo Espectador."+ChatColor.RED+"\n["+ChatColor.GREEN+"Total de Espectadores"+ChatColor.YELLOW+": "+ChatColor.DARK_PURPLE+(spectador.size() - 1)+ChatColor.RED+"]");
 				ga.getBossbar().removePlayer(player);
 			}else {
-				sendMessageToUsersOfSameMapLessPlayer(player,
+				if(player.getPing() >= 150) {
+					sendMessageToUsersOfSameMapLessPlayer(player,
+							ChatColor.YELLOW+"A Salido "+ChatColor.GREEN+player.getName()+" "+Utils.pingLevel(player.getPing())+ChatColor.RED+" ("+ChatColor.GOLD+(ga.getParticipants().size()-1)+ChatColor.YELLOW+"/"+ChatColor.GOLD+getMaxPlayerMap(pl.getMapName())+ChatColor.RED+")");
+				}else {
+					sendMessageToUsersOfSameMapLessPlayer(player,
 							ChatColor.YELLOW+"A Salido "+ChatColor.GREEN+player.getName()+ChatColor.RED+" ("+ChatColor.GOLD+(ga.getParticipants().size()-1)+ChatColor.YELLOW+"/"+ChatColor.GOLD+getMaxPlayerMap(pl.getMapName())+ChatColor.RED+")");			
+				}
+				
 			}
 			
 			

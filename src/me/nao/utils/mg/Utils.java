@@ -124,14 +124,16 @@ public class Utils {
 		
 		public static String pingLevel(int ping) {
 			String text = "";
-			if(ping <= 150) {
-				text = ""+org.bukkit.ChatColor.GREEN+ping+"ms es Bueno";
-			}else if(ping >= 151 && ping <= 250) {
-				text = ""+org.bukkit.ChatColor.YELLOW+ping+"ms es Medio";
-			}else if(ping >= 151 && ping <= 250) {
-				text = ""+org.bukkit.ChatColor.RED+ping+"ms es Malo";
+			if(ping <= 30) {
+				text = colorTextChatColor("&a"+ping+"ms &fes &aMuy Bueno");
+			}else if(ping >= 31 && ping <= 60) {
+				text = colorTextChatColor("&b"+ping+"ms &fes &bBueno");
+			}else if(ping >= 61 && ping <= 120) {
+				text = colorTextChatColor("&e"+ping+"ms &fes &eMedio");
+			}else if(ping >= 121 && ping <= 250) {
+				text = colorTextChatColor("&6"+ping+"ms &fes &6Malo [Posible Desconexion]");
 			}else if(ping >= 251) {
-				text = ""+org.bukkit.ChatColor.DARK_RED+ping+"ms es Peor";
+				text = colorTextChatColor("&c"+ping+"ms &fes &cMuy Malo [Desconexion por Lag Inminente]");
 			}
 			
 			return text;

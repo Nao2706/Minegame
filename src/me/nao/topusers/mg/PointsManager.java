@@ -146,6 +146,7 @@ public class PointsManager {
 			//player.sendMessage("Has Ganado "+val+" de Xp para el modo Ranked.");
 			player.sendMessage("");
 			player.sendMessage(""+ChatColor.RED+ChatColor.BOLD+"| INFORME DE PROGRESO |");
+			player.sendMessage("");
 			player.sendMessage(Utils.colorTextChatColor("&6Este Mapa da la Siguiente XP por Cada&f:"));
 			player.sendMessage(Utils.colorTextChatColor("&cKill: &a"+gi.getPointsPerKills()+" &cMuerte: &a"+gi.getPointsPerDeads()+" &cRevivir: &a"+gi.getPointsPerRevive()+" &cAyudara Revivir: &a"+gi.getPointsPerHelpRevive()));
 			player.sendMessage(Utils.colorTextChatColor("&aEl Bonus de este Mapa es: &6"+gi.getPointsBonus()));
@@ -163,6 +164,7 @@ public class PointsManager {
 			cb.append(Utils.sendTextComponentShow(net.md_5.bungee.api.ChatColor.DARK_PURPLE+String.valueOf(totalxp),"Total de Puntos.", net.md_5.bungee.api.ChatColor.GOLD));
 
 			player.spigot().sendMessage(cb.create());
+			player.sendMessage("");
 			//player.sendMessage(ChatColor.GOLD+"Resultado: "+ChatColor.GRAY+xp+ChatColor.RED+" + "+ChatColor.GREEN+val+ChatColor.RED+" x "+ChatColor.GOLD+ChatColor.RED+streak+ChatColor.DARK_PURPLE+" = "+ChatColor.GREEN+(xp + val + (streak * 100)));
 			//SI VA EN RACHA GANARA UN BONUS
 			
