@@ -3,9 +3,7 @@ Chest-Particle-Range: 10
 Join-Reward: false
 Time-Reward: 30
 Anti-Void: true
-Plus-Or-Remove: "+"
-Local-Time-Day: 1
-Local-Time-Hour: 1
+Country-Time: "Ecuador"
 Dispenser-Range: 30
 Loot-Table-Limit: 10
 Maintenance: false
