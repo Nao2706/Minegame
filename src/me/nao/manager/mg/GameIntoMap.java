@@ -1385,10 +1385,6 @@ public class GameIntoMap {
 		
 		Inventory inv = player.getInventory();
 		
-		if(player.getInventory().getItemInMainHand().isSimilar(it)) {
-			if(inv.containsAtLeast(it, cant)) {
-				
-				
 				int slot = inv.first(it);
 				@SuppressWarnings("unused")
 				boolean hasAmmo = false;
@@ -1410,11 +1406,6 @@ public class GameIntoMap {
 					}
 				}
 				
-			}
-		}
-		
-	
-		
 		
 		return false;
 	}

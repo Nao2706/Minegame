@@ -70,6 +70,7 @@ public class MobsActions {
 		this.plugin = plugin;
 	}
 	
+	//LANZA UNA FLECHA EN DIRECCION AL JUGADOR UNA VEZ SPAWNEE EN CUALQUIER SITIO
 	public void detectBlockAndShoot(Player player,Location l ,int range) {
 		
 		
