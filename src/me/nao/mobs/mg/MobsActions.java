@@ -2011,7 +2011,7 @@ public class MobsActions {
 			    	if(!l.isEmpty()) {
 			    		for(Entity e : l) {
 			        		
-			        		if(e.getType() != EntityType.PLAYER && e.getType() != EntityType.PAINTING) {
+			        		if(e.getType() != EntityType.PLAYER || e.getType() != EntityType.PAINTING || e.getType() != EntityType.ITEM_FRAME || e.getType() != EntityType.GLOW_ITEM_FRAME) {
 			        			if(e.getType() == EntityType.ITEM) {
 			        				Item ite = (Item) e;
 			        				if(ite.getOwner() != null) continue;
@@ -2028,7 +2028,7 @@ public class MobsActions {
 			    	}
 			    
 			    	
-			    }
+		}
     
 		public int randomPosOrNeg(int i){
 				Random r = new Random();
