@@ -721,6 +721,7 @@ public class EventRandoms implements Listener{
 		        			PlayerInfo pl = plugin.getPlayerInfoPoo().get(player);
 		        			
 		        			if(pl.getCheckPointMarker() == null) {
+		        				player.setCooldown(Items.CHECKPOINTFLAG.getValue(), 20*10);
 		        				player.sendMessage(ChatColor.RED+"No tienes Ningun CheckPoint Marcado.");
 		        				player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 20.0F, 1F);
 		        				return;

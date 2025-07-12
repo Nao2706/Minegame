@@ -46,6 +46,7 @@ import me.nao.generalinfo.mg.GameConditions;
 import me.nao.generalinfo.mg.GameInfo;
 import me.nao.generalinfo.mg.GameObjetivesMG;
 import me.nao.generalinfo.mg.PlayerInfo;
+import me.nao.generalinfo.mg.TimeRecord;
 import me.nao.main.mg.Minegame;
 import me.nao.revive.mg.RevivePlayer;
 import me.nao.shop.mg.MinigameShop1;
@@ -361,8 +362,7 @@ public class GameIntoMap {
 						Fireworks f = new Fireworks(player);
 						f.spawnFireballGreenLarge();
 						player.sendMessage(ChatColor.GREEN+"Has Sobrevivido Felicidades.");
-						pl.setTotalSecondsOfCronomet(gm.getGameTime().getTotalSecondsofCronomet());
-						pl.setPlayerCronomet(gm.getGameTime().getSecondsConvertToCronomet(gm.getGameTime().getTotalSecondsofCronomet()));
+						pl.setPlayerCronomet(new TimeRecord(player.getName(),gm.getGameTime().getGameCronometForPlayer()));
 						gmc.sendMessageToUsersOfSameMapLessPlayer(player, ChatColor.GOLD+player.getName()+ChatColor.GREEN+" Sobrevivio y Gano.");
 						isTheRankedGames(player,gm.isRankedMap());
 					 return;
@@ -373,8 +373,7 @@ public class GameIntoMap {
 			}else if(motivo == StopMotive.WIN && gm.getGameType() == GameType.RESISTENCE) {
 				
 				if(gm.getGameStatus() == GameStatus.JUGANDO || gm.getGameStatus() == GameStatus.PAUSE || gm.getGameStatus() == GameStatus.FREEZE) {
-					pl.setTotalSecondsOfCronomet(gm.getGameTime().getTotalSecondsofCronomet());
-					pl.setPlayerCronomet(gm.getGameTime().getSecondsConvertToCronomet(gm.getGameTime().getTotalSecondsofCronomet()));
+					pl.setPlayerCronomet(new TimeRecord(player.getName(),gm.getGameTime().getGameCronometForPlayer()));
 
 					gmc.EndTptoSpawn(player, mapa);
 					isTheRankedGames(player,gm.isRankedMap());
@@ -430,8 +429,7 @@ public class GameIntoMap {
 					gmc.playerArriveToTheWin(player, mapa);
 					gmc.EndTptoSpawn(player, mapa);
 				}
-				pl.setTotalSecondsOfCronomet(gm.getGameTime().getTotalSecondsofCronomet());
-				pl.setPlayerCronomet(gm.getGameTime().getSecondsConvertToCronomet(gm.getGameTime().getTotalSecondsofCronomet()));
+				pl.setPlayerCronomet(new TimeRecord(player.getName(),gm.getGameTime().getGameCronometForPlayer()));
 				isTheRankedGames(player,gm.isRankedMap());
 			}else {
 				if(gm.getGameType() == GameType.ADVENTURE) {
@@ -461,8 +459,7 @@ public class GameIntoMap {
 					gmc.playerArriveToTheWin(player, mapa);
 					gmc.EndTptoSpawn(player, mapa);
 				}
-				pl.setTotalSecondsOfCronomet(gm.getGameTime().getTotalSecondsofCronomet());
-				pl.setPlayerCronomet(gm.getGameTime().getSecondsConvertToCronomet(gm.getGameTime().getTotalSecondsofCronomet()));
+				pl.setPlayerCronomet(new TimeRecord(player.getName(),gm.getGameTime().getGameCronometForPlayer()));
 				isTheRankedGames(player,gm.isRankedMap());
 			}else{
 				
@@ -493,8 +490,7 @@ public class GameIntoMap {
 					gmc.playerArriveToTheWin(player, mapa);
 					gmc.EndTptoSpawn(player, mapa);
 				}
-				pl.setTotalSecondsOfCronomet(gm.getGameTime().getTotalSecondsofCronomet());
-				pl.setPlayerCronomet(gm.getGameTime().getSecondsConvertToCronomet(gm.getGameTime().getTotalSecondsofCronomet()));
+				pl.setPlayerCronomet(new TimeRecord(player.getName(),gm.getGameTime().getGameCronometForPlayer()));
 				isTheRankedGames(player,gm.isRankedMap());
 			}else {
 				if(gm.getGameType() == GameType.ADVENTURE) {
@@ -522,8 +518,8 @@ public class GameIntoMap {
 				gmc.playerArriveToTheWin(player, mapa);
 				gmc.EndTptoSpawn(player, mapa);
 			}
-			pl.setTotalSecondsOfCronomet(gm.getGameTime().getTotalSecondsofCronomet());
-			pl.setPlayerCronomet(gm.getGameTime().getSecondsConvertToCronomet(gm.getGameTime().getTotalSecondsofCronomet()));
+			pl.setPlayerCronomet(new TimeRecord(player.getName(),gm.getGameTime().getGameCronometForPlayer()));
+		
 			isTheRankedGames(player,gm.isRankedMap());
 			return;
 		}
