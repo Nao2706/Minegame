@@ -2,33 +2,37 @@ package me.nao.generalinfo.mg;
 
 
 
-
-
 public class TimeRecord {
 
 	
 	
-   private String nombre;
-   private long segundos;
-
+   private String name;
+   private long seconds;
+  
+   
     public TimeRecord(String nombre, String tiempo) {
-        this.nombre = nombre;
+        this.name = nombre;
         String[] partes = tiempo.split(":");
-        this.segundos = Integer.parseInt(partes[0]) * 3600 + Integer.parseInt(partes[1]) * 60 + Integer.parseInt(partes[2]);
+        this.seconds = Integer.parseInt(partes[0]) * 3600 + Integer.parseInt(partes[1]) * 60 + Integer.parseInt(partes[2]);
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getCronometPlayerName() {
+        return name;
     }
 
-    public long getSegundos() {
-        return segundos;
+    public long getCronometTotalSeconds() {
+        return seconds;
     }
 
-    public String getTiempo() {
-        long horas = segundos / 3600;
-        long minutos = (segundos % 3600) / 60;
-        long segundosRestantes = segundos % 60;
+    public void setNewRecord(String name , long segundos) {
+    	this.name = name;
+    	this.seconds = segundos;
+    }
+    
+    public String getCronometTime() {
+        long horas = seconds / 3600;
+        long minutos = (seconds % 3600) / 60;
+        long segundosRestantes = seconds % 60;
         return String.format("%02d:%02d:%02d", horas, minutos, segundosRestantes);
     }
 }
@@ -83,13 +87,12 @@ class Tiempo {
 
 
 
-//
 //List<Tiempo> registros = new ArrayList<>();
-////registros.add(new Tiempo("Luis", "00:25:00"));
-////registros.add(new Tiempo("Maria", "00:32:43"));
-////registros.add(new Tiempo("Marcos", "00:27:34"));
-////registros.add(new Tiempo("Tito", "00:35:30"));
-////registros.add(new Tiempo("Karely", "00:50:34"));
+//registros.add(new Tiempo("Luis", "00:25:00"));
+//registros.add(new Tiempo("Maria", "00:32:43"));
+//registros.add(new Tiempo("Marcos", "00:27:34"));
+//registros.add(new Tiempo("Tito", "00:35:30"));
+//registros.add(new Tiempo("Karely", "00:50:34"));
 ////registros.add(new Tiempo("Rui", "00:45:20"));
 ////registros.add(new Tiempo("Mercedes", "00:55:01"));
 ////registros.add(new Tiempo("Kiri", "00:45:20"));
@@ -101,10 +104,10 @@ class Tiempo {
 //
 //nuevosParticipantes.add(new Tiempo("Juan", "00:30:00"));
 //nuevosParticipantes.add(new Tiempo("Pedro", "00:40:00"));
-//nuevosParticipantes.add(new Tiempo("Luis", "00:24:00"));
-//nuevosParticipantes.add(new Tiempo("Carlos", "00:35:30"));
-//nuevosParticipantes.add(new Tiempo("Hector", "00:50:34"));
-//nuevosParticipantes.add(new Tiempo("Karen", "00:45:20"));
+//nuevosParticipantes.add(new Tiempo("Luis", "00:27:00"));
+////nuevosParticipantes.add(new Tiempo("Carlos", "00:35:30"));
+////nuevosParticipantes.add(new Tiempo("Hector", "00:50:34"));
+////nuevosParticipantes.add(new Tiempo("Karen", "00:45:20"));
 //nuevosParticipantes.add(new Tiempo("Romina", "00:55:01"));
 //nuevosParticipantes.add(new Tiempo("Fernan", "00:45:20"));
 //nuevosParticipantes.add(new Tiempo("Carola", "00:56:12"));
@@ -112,30 +115,30 @@ class Tiempo {
 //
 //
 //for (Tiempo nuevoParticipante : nuevosParticipantes) {
-//  boolean encontrado = false;
-//  
-//  for (Tiempo registro : registros) {
-//  	
-//      if (registro.getNombre().equals(nuevoParticipante.getNombre())) {
-//      	
-//          encontrado = true;
-//          if (nuevoParticipante.getSegundos() < registro.getSegundos()) {
-//          	
-//              System.out.println(nuevoParticipante.getNombre() + " ha roto su récord! Nuevo tiempo: " + nuevoParticipante.getTiempo()+" Anterior: "+registro.getTiempo());
-//              //registro.segundos = nuevoParticipante.getSegundos(); // SETEAR DATOS EN LISTA
-//               registro.setNewRecord(nuevoParticipante.getNombre() ,nuevoParticipante.getSegundos());
-//               System.out.println(nuevoParticipante.getNombre()+" "+nuevoParticipante.getTiempo());
-//             
-//          } else {
-//              System.out.println(nuevoParticipante.getNombre() + " no ha roto su récord. Mejor tiempo: " + registro.getTiempo());
-//          }
-//          break;
-//      }
-//  }
-//  if (!encontrado) {
-//      registros.add(nuevoParticipante);
-//      System.out.println(nuevoParticipante.getNombre() + " es un nuevo participante!");
-//  }
+//    boolean encontrado = false;
+//    
+//    for (Tiempo registro : registros) {
+//    	
+//        if (registro.getNombre().equals(nuevoParticipante.getNombre())) {
+//        	
+//            encontrado = true;
+//            if (nuevoParticipante.getSegundos() < registro.getSegundos()) {
+//            	
+//                System.out.println(nuevoParticipante.getNombre() + " ha roto su récord! Nuevo tiempo: " + nuevoParticipante.getTiempo()+" Anterior: "+registro.getTiempo());
+//                //registro.segundos = nuevoParticipante.getSegundos(); // SETEAR DATOS EN LISTA
+//                 registro.setNewRecord(nuevoParticipante.getNombre() ,nuevoParticipante.getSegundos());
+//                 System.out.println(nuevoParticipante.getNombre()+" "+nuevoParticipante.getTiempo());
+//               
+//            } else {
+//                System.out.println(nuevoParticipante.getNombre() + " no ha roto su récord. Mejor tiempo: " + registro.getTiempo());
+//            }
+//            break;
+//        }
+//    }
+//    if (!encontrado) {
+//        registros.add(nuevoParticipante);
+//        System.out.println(nuevoParticipante.getNombre() + " es un nuevo participante!");
+//    }
 //}
 //
 //// Ordenar registros
@@ -147,35 +150,14 @@ class Tiempo {
 //
 //
 //
-//  Tiempo ultimoRegistro = registros.get(registros.size() - 1); //ULTIMO USUARIO DEL REGISTRO
-//  Tiempo tercerMejorTiempo = registros.get(9);//POSICION DEL TOP
-//  if (ultimoRegistro.getSegundos() > tercerMejorTiempo.getSegundos()) {
-//      System.out.println("El tiempo de " + ultimoRegistro.getNombre() + " (" + ultimoRegistro.getTiempo() + ") es demasiado largo para entrar al top. El tercer mejor tiempo es " + tercerMejorTiempo.getTiempo());
-//  }
 //
-//
-//
-////if (registros.size() > 4) {// ANTES ESTABA EN 3
-////  Tiempo ultimoRegistro = registros.get(registros.size() - 1); //ULTIMO USUARIO DEL REGISTRO
-////  Tiempo tercerMejorTiempo = registros.get(2);//POSICION DEL TOP
-////  if (ultimoRegistro.getSegundos() > tercerMejorTiempo.getSegundos()) {
-////      System.out.println("El tiempo de " + ultimoRegistro.getNombre() + " (" + ultimoRegistro.getTiempo() + ") es demasiado largo para entrar al top. El tercer mejor tiempo es " + tercerMejorTiempo.getTiempo());
-////  }
-////}
-//
-//// Mostrar top 3
-////System.out.println("Top 12:");
-////for (int i = 0; i < Math.min(12, registros.size()); i++) {
-////  Tiempo registro = registros.get(i);
-////  System.out.println((i + 1) + ". " + registro.getNombre() + " - " + registro.getTiempo());
-////}
-//  
-//  
-//  System.out.println("Top 10:");
-//  for (int i = 0; i < registros.size(); i++) {
-//      Tiempo registro = registros.get(i);
-//      System.out.println((i + 1) + ". " + registro.getNombre() + " - " + registro.getTiempo());
-//  }
+//if(registros.size() >= 10) {
+//    Tiempo ultimoRegistro = registros.get(registros.size() - 1); //ULTIMO USUARIO DEL REGISTRO
+//    Tiempo utlimolugardeltop = registros.get(9);//POSICION DEL TOP
+//    if (ultimoRegistro.getSegundos() > utlimolugardeltop.getSegundos()) {
+//        System.out.println("El tiempo de " + ultimoRegistro.getNombre() + " (" + ultimoRegistro.getTiempo() + ") es demasiado largo para entrar al top. El tercer mejor tiempo es de: "+utlimolugardeltop.getNombre()+" : " + utlimolugardeltop.getTiempo());
+//    }
+//}
 
 //================================================
 //public class Console {
