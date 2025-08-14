@@ -468,6 +468,28 @@ public class EventRandoms implements Listener{
 					
 					removeItemstackCustom(player,e.getItem());
 				}
+				
+				if(e.getItem().isSimilar(Items.TNTARROW2.getValue())) {
+					e.setCancelled(true);
+					TNTPrimed ptnt = (TNTPrimed) player.getWorld().spawnEntity(player.getLocation().add(0.5,1,0.5),EntityType.TNT);
+					ptnt.setFuseTicks(5*20);
+					ptnt.setVelocity(player.getLocation().getDirection().multiply(2.5));
+					ptnt.setCustomName(ChatColor.GREEN+"TNT de Flechas 2");
+					ptnt.setSource(player);
+					ptnt.setYield(0);
+					
+					removeItemstackCustom(player,e.getItem());
+				}if(e.getItem().isSimilar(Items.TNTARROW3.getValue())) {
+					e.setCancelled(true);
+					TNTPrimed ptnt = (TNTPrimed) player.getWorld().spawnEntity(player.getLocation().add(0.5,1,0.5),EntityType.TNT);
+					ptnt.setFuseTicks(5*20);
+					ptnt.setVelocity(player.getLocation().getDirection().multiply(2.5));
+					ptnt.setCustomName(ChatColor.GREEN+"TNT de Flechas 3");
+					ptnt.setSource(player);
+					ptnt.setYield(0);
+					
+					removeItemstackCustom(player,e.getItem());
+				}
 			}}
 		
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR) {
@@ -1634,6 +1656,7 @@ public class EventRandoms implements Listener{
 					names.add("LLUVIA DE TNT");	
 					names.add("LLUVIA DE TNT CON PUAS");	
 					names.add("TNT de Flechas");
+					names.add("TNT de Flechas 2");
 					
 					if(mobname.equals("TNT de Flechas")){
 						 for(int i = 0;i<200;i++) {
@@ -1645,6 +1668,36 @@ public class EventRandoms implements Listener{
 								aw.setFireTicks(1200);
 								//aw.addCustomEffect(new PotionEffect(PotionEffectType.INSTANT_DAMAGE,1*20,10, false ,false, true), true);
 								aw.setCustomName(ChatColor.RED+"Pua de TNT Especial");
+								aw.setDamage(1000);
+								//aw.setShooter(z); 
+								//((Arrow) h1).setShooter(player);
+							}
+					}if(mobname.equals("TNT de Flechas 2")){
+						 for(int i = 0;i<200;i++) {
+								Location loc = ent.getLocation();
+								Arrow aw = (Arrow) loc.getWorld().spawnEntity(loc.add(0, 0, 0), EntityType.ARROW);
+								//ESTE GRADO O DIRECCION VA AL ESTE 
+								aw.setVelocity(getRandomVector2(30));
+								aw.setCritical(true);
+								aw.setKnockbackStrength(2);
+								aw.setFireTicks(1200);
+								//aw.addCustomEffect(new PotionEffect(PotionEffectType.INSTANT_DAMAGE,1*20,10, false ,false, true), true);
+								aw.setCustomName(ChatColor.RED+"Pua de TNT Especial 2");
+								aw.setDamage(1000);
+								//aw.setShooter(z); 
+								//((Arrow) h1).setShooter(player);
+							}
+					}if(mobname.equals("TNT de Flechas 3")){
+						 for(int i = 0;i<200;i++) {
+								Location loc = ent.getLocation();
+								Arrow aw = (Arrow) loc.getWorld().spawnEntity(loc.add(0, 0, 0), EntityType.ARROW);
+								//ESTE GRADO O DIRECCION VA AL ESTE 
+								aw.setVelocity(getRandomVector2());
+								aw.setCritical(true);
+								aw.setKnockbackStrength(2);
+								aw.setFireTicks(1200);
+								//aw.addCustomEffect(new PotionEffect(PotionEffectType.INSTANT_DAMAGE,1*20,10, false ,false, true), true);
+								aw.setCustomName(ChatColor.RED+"Pua de TNT Especial 3");
 								aw.setDamage(1000);
 								//aw.setShooter(z); 
 								//((Arrow) h1).setShooter(player);
@@ -1955,7 +2008,8 @@ public class EventRandoms implements Listener{
 					  AbstractArrow arrow = (AbstractArrow) projectile;
 					  if(arrow.getCustomName() != null) {
 						  String text = ChatColor.stripColor(arrow.getCustomName());
-						  if(text.equals("Flecha Trampa") || text.equals("Flecha Trampa Mejorada") || text.equals("Pua de TNT") || text.equals("Pua de TNT Especial")) {
+						  if(text.equals("Flecha Trampa") || text.equals("Flecha Trampa Mejorada") || text.equals("Pua de TNT") ||
+						     text.equals("Pua de TNT Especial") || text.equals("Pua de TNT Especial 2") || text.equals("Pua de TNT Especial 3")) {
 							arrow.remove();
 						  }else if(text.startsWith("Torreta")) {
 							arrow.remove();
@@ -3497,7 +3551,7 @@ public class EventRandoms implements Listener{
 				Vector v = loc.getDirection();
 				
 				Arrow aw = (Arrow) loc.getWorld().spawnEntity(loc.add(0, 1.6, 0), EntityType.ARROW);
-				aw.setVelocity( getRandomVectorShoot(v));
+				aw.setVelocity(getRandomVectorShoot(v));
 				aw.setCritical(true);
 				aw.setKnockbackStrength(2);
 				//aw.setFireTicks(1200);
@@ -3707,6 +3761,49 @@ public class EventRandoms implements Listener{
 			   
 			   Vector vect = new Vector(x,y,z).multiply(1.5);//3
 			   return vect;
+	 	   }
+		   
+		   
+		   public Vector getRandomVector(double angle) {
+			   double u = Math.random();
+			   //double v = Math.random() * 2 * Math.PI;
+			   double theta = Math.toRadians(angle / 2);
+			   double phi = Math.acos(1 - u *(1 - Math.cos(theta)));
+			   double x = Math.cos(phi);
+			   double y = Math.sin(phi) * Math.sin(Math.random() * 2 * Math.PI);
+			   double z = Math.sin(phi) * Math.cos(Math.random() * 2 * Math.PI);
+			   
+			   Vector vect = new Vector(x,y,z).multiply(1.5);//3
+			   return vect;
+	 	   }
+		   
+		   public Vector getRandomVector2(double angle) {
+			   double u = Math.random();
+			   //double v = Math.random() * 2 * Math.PI;
+			   double theta = Math.toRadians(angle / 2);
+			   double phi = Math.acos(1 - u *(1 - Math.cos(theta)));
+			   
+			   double azimuth = Math.random() * 2 * Math.PI;
+			   double x = Math.cos(azimuth);
+			   double z = Math.sin(azimuth);
+			   
+			   Vector vect = new Vector(x,0,z).multiply(Math.sin(phi));//3
+			   return vect.normalize();
+	 	   }
+		   
+		   
+		   public Vector getRandomVector2() {
+			   double u = Math.random();
+			   //double v = Math.random() * 2 * Math.PI;
+			   double theta = Math.toRadians(15);
+			   double phi = Math.acos(1 - u *(1 - Math.cos(theta)));
+			   
+			   double azimuth = Math.random() * 2 * Math.PI;
+			   double x = Math.cos(azimuth) * Math.sin(phi);
+			   double z = Math.sin(azimuth) * Math.sin(phi);
+			   
+			   Vector vect = new Vector(x,0,z).multiply(1.5);//3
+			   return vect.normalize();
 	 	   }
 		   
 		   public Vector getRandomVectorShoot(Vector vec) {
