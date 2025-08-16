@@ -4503,12 +4503,13 @@ public class Comandsmg implements CommandExecutor{
 			 		  return true;
 			 	  }else if(args[0].equalsIgnoreCase("arrow")) {
 					
-					player.getInventory().addItem(Items.ARROWDIS.getValue());
-					player.getInventory().addItem(Items.ARROWDIS2.getValue());
-					player.getInventory().addItem(Items.REVIVE.getValue());
+//					player.getInventory().addItem(Items.ARROWDIS.getValue());
+//					player.getInventory().addItem(Items.ARROWDIS2.getValue());
+//					player.getInventory().addItem(Items.REVIVE.getValue());
 					player.getInventory().addItem(Items.TNTARROW.getValue());
 					player.getInventory().addItem(Items.TNTARROW2.getValue());
 					player.getInventory().addItem(Items.TNTARROW3.getValue());
+					player.getInventory().addItem(Items.TNTARROW4.getValue());
 					return true;
 				}else if(args[0].equalsIgnoreCase("lock")) {
 						Block b = player.getTargetBlock((Set<Material>) null, 5);

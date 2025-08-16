@@ -471,20 +471,31 @@ public class EventRandoms implements Listener{
 				
 				if(e.getItem().isSimilar(Items.TNTARROW2.getValue())) {
 					e.setCancelled(true);
-					TNTPrimed ptnt = (TNTPrimed) player.getWorld().spawnEntity(player.getLocation().add(0.5,1,0.5),EntityType.TNT);
+					TNTPrimed ptnt = (TNTPrimed) player.getWorld().spawnEntity(player.getLocation(),EntityType.TNT);
 					ptnt.setFuseTicks(5*20);
 					ptnt.setVelocity(player.getLocation().getDirection().multiply(2.5));
-					ptnt.setCustomName(ChatColor.GREEN+"TNT de Flechas 2");
+					ptnt.setCustomName(ChatColor.YELLOW+"TNT de Flechas 2");
 					ptnt.setSource(player);
 					ptnt.setYield(0);
 					
 					removeItemstackCustom(player,e.getItem());
 				}if(e.getItem().isSimilar(Items.TNTARROW3.getValue())) {
 					e.setCancelled(true);
-					TNTPrimed ptnt = (TNTPrimed) player.getWorld().spawnEntity(player.getLocation().add(0.5,1,0.5),EntityType.TNT);
+					TNTPrimed ptnt = (TNTPrimed) player.getWorld().spawnEntity(player.getLocation(),EntityType.TNT);
 					ptnt.setFuseTicks(5*20);
 					ptnt.setVelocity(player.getLocation().getDirection().multiply(2.5));
-					ptnt.setCustomName(ChatColor.GREEN+"TNT de Flechas 3");
+					ptnt.setCustomName(ChatColor.RED+"TNT de Flechas 3");
+					ptnt.setSource(player);
+					ptnt.setYield(0);
+					
+					removeItemstackCustom(player,e.getItem());
+					
+				}if(e.getItem().isSimilar(Items.TNTARROW4.getValue())) {
+					e.setCancelled(true);
+					TNTPrimed ptnt = (TNTPrimed) player.getWorld().spawnEntity(player.getLocation(),EntityType.TNT);
+					ptnt.setFuseTicks(5*20);
+					ptnt.setVelocity(player.getLocation().getDirection().multiply(2.5));
+					ptnt.setCustomName(ChatColor.DARK_PURPLE+"TNT de Flechas 4");
 					ptnt.setSource(player);
 					ptnt.setYield(0);
 					
@@ -1657,6 +1668,8 @@ public class EventRandoms implements Listener{
 					names.add("LLUVIA DE TNT CON PUAS");	
 					names.add("TNT de Flechas");
 					names.add("TNT de Flechas 2");
+					names.add("TNT de Flechas 3");
+					names.add("TNT de Flechas 4");
 					
 					if(mobname.equals("TNT de Flechas")){
 						 for(int i = 0;i<200;i++) {
@@ -1667,7 +1680,7 @@ public class EventRandoms implements Listener{
 								aw.setKnockbackStrength(2);
 								aw.setFireTicks(1200);
 								//aw.addCustomEffect(new PotionEffect(PotionEffectType.INSTANT_DAMAGE,1*20,10, false ,false, true), true);
-								aw.setCustomName(ChatColor.RED+"Pua de TNT Especial");
+								aw.setCustomName(ChatColor.GREEN+"Pua de TNT Especial");
 								aw.setDamage(1000);
 								//aw.setShooter(z); 
 								//((Arrow) h1).setShooter(player);
@@ -1677,12 +1690,12 @@ public class EventRandoms implements Listener{
 								Location loc = ent.getLocation();
 								Arrow aw = (Arrow) loc.getWorld().spawnEntity(loc.add(0, 0, 0), EntityType.ARROW);
 								//ESTE GRADO O DIRECCION VA AL ESTE 
-								aw.setVelocity(getRandomVector2(30));
+								aw.setVelocity(getRandomVector2(75));//
 								aw.setCritical(true);
 								aw.setKnockbackStrength(2);
 								aw.setFireTicks(1200);
 								//aw.addCustomEffect(new PotionEffect(PotionEffectType.INSTANT_DAMAGE,1*20,10, false ,false, true), true);
-								aw.setCustomName(ChatColor.RED+"Pua de TNT Especial 2");
+								aw.setCustomName(ChatColor.YELLOW+"Pua de TNT Especial 2");
 								aw.setDamage(1000);
 								//aw.setShooter(z); 
 								//((Arrow) h1).setShooter(player);
@@ -1692,12 +1705,57 @@ public class EventRandoms implements Listener{
 								Location loc = ent.getLocation();
 								Arrow aw = (Arrow) loc.getWorld().spawnEntity(loc.add(0, 0, 0), EntityType.ARROW);
 								//ESTE GRADO O DIRECCION VA AL ESTE 
-								aw.setVelocity(getRandomVector2());
+								//aw.setVelocity(getRandomVector3());
+								aw.setVelocity(getRandomVector3());//
 								aw.setCritical(true);
 								aw.setKnockbackStrength(2);
 								aw.setFireTicks(1200);
 								//aw.addCustomEffect(new PotionEffect(PotionEffectType.INSTANT_DAMAGE,1*20,10, false ,false, true), true);
 								aw.setCustomName(ChatColor.RED+"Pua de TNT Especial 3");
+								aw.setDamage(1000);
+								//aw.setShooter(z); 
+								//((Arrow) h1).setShooter(player);
+							}
+					}if(mobname.equals("TNT de Flechas 4")){
+							for(int i = 0;i<200;i++) {
+								Location loc = ent.getLocation();
+								Arrow aw = (Arrow) loc.getWorld().spawnEntity(loc.add(0, 0, 0), EntityType.ARROW);
+								aw.setVelocity(getRandomVector());
+								aw.setCritical(true);
+								aw.setKnockbackStrength(2);
+								aw.setFireTicks(1200);
+								//aw.addCustomEffect(new PotionEffect(PotionEffectType.INSTANT_DAMAGE,1*20,10, false ,false, true), true);
+								aw.setCustomName(ChatColor.DARK_PURPLE+"Pua de TNT Especial 4");
+								aw.setDamage(1000);
+								//aw.setShooter(z); 
+								//((Arrow) h1).setShooter(player);
+							}
+						 for(int i = 0;i<200;i++) {
+								Location loc = ent.getLocation();
+								Arrow aw = (Arrow) loc.getWorld().spawnEntity(loc.add(0, 0, 0), EntityType.ARROW);
+								//ESTE GRADO O DIRECCION VA AL ESTE 
+								aw.setVelocity(getRandomVector2(75));//
+								aw.setCritical(true);
+								aw.setKnockbackStrength(2);
+								aw.setFireTicks(1200);
+								//aw.addCustomEffect(new PotionEffect(PotionEffectType.INSTANT_DAMAGE,1*20,10, false ,false, true), true);
+								aw.setCustomName(ChatColor.DARK_PURPLE+"Pua de TNT Especial 4");
+								aw.setDamage(1000);
+								//aw.setShooter(z); 
+								//((Arrow) h1).setShooter(player);
+							}
+						
+						 for(int i = 0;i<200;i++) {
+								Location loc = ent.getLocation();
+								Arrow aw = (Arrow) loc.getWorld().spawnEntity(loc.add(0, 0, 0), EntityType.ARROW);
+								//ESTE GRADO O DIRECCION VA AL ESTE 
+								//aw.setVelocity(getRandomVector3());
+								aw.setVelocity(getRandomVector3());//
+								aw.setCritical(true);
+								aw.setKnockbackStrength(2);
+								aw.setFireTicks(1200);
+								//aw.addCustomEffect(new PotionEffect(PotionEffectType.INSTANT_DAMAGE,1*20,10, false ,false, true), true);
+								aw.setCustomName(ChatColor.DARK_PURPLE+"Pua de TNT Especial 4");
 								aw.setDamage(1000);
 								//aw.setShooter(z); 
 								//((Arrow) h1).setShooter(player);
@@ -2009,7 +2067,7 @@ public class EventRandoms implements Listener{
 					  if(arrow.getCustomName() != null) {
 						  String text = ChatColor.stripColor(arrow.getCustomName());
 						  if(text.equals("Flecha Trampa") || text.equals("Flecha Trampa Mejorada") || text.equals("Pua de TNT") ||
-						     text.equals("Pua de TNT Especial") || text.equals("Pua de TNT Especial 2") || text.equals("Pua de TNT Especial 3")) {
+						     text.equals("Pua de TNT Especial") || text.equals("Pua de TNT Especial 2") || text.equals("Pua de TNT Especial 3") || text.equals("Pua de TNT Especial 4")) {
 							arrow.remove();
 						  }else if(text.startsWith("Torreta")) {
 							arrow.remove();
@@ -3763,7 +3821,7 @@ public class EventRandoms implements Listener{
 			   return vect;
 	 	   }
 		   
-		   
+			//ESTE GRADO O DIRECCION VA AL ESTE ESTABA EN 30 CREO QUE LANZABA VECTORES EN UNA DIRECCION FIJA TESTEAR
 		   public Vector getRandomVector(double angle) {
 			   double u = Math.random();
 			   //double v = Math.random() * 2 * Math.PI;
@@ -3777,6 +3835,7 @@ public class EventRandoms implements Listener{
 			   return vect;
 	 	   }
 		   
+			//ESTE GRADO O DIRECCION VA AL ESTE ESTABA EN 30 PARECIDO A BOUNCY BETTY PERO FALTA
 		   public Vector getRandomVector2(double angle) {
 			   double u = Math.random();
 			   //double v = Math.random() * 2 * Math.PI;
@@ -3787,7 +3846,7 @@ public class EventRandoms implements Listener{
 			   double x = Math.cos(azimuth);
 			   double z = Math.sin(azimuth);
 			   
-			   Vector vect = new Vector(x,0,z).multiply(Math.sin(phi));//3
+			   Vector vect = new Vector(x,0.3,z).multiply(Math.sin(phi));//3
 			   return vect.normalize();
 	 	   }
 		   
@@ -3803,6 +3862,21 @@ public class EventRandoms implements Listener{
 			   double z = Math.sin(azimuth) * Math.sin(phi);
 			   
 			   Vector vect = new Vector(x,0,z).multiply(1.5);//3
+			   return vect.normalize();
+	 	   }
+		   
+		   
+		   public Vector getRandomVector3() {
+			   double u = Math.random();
+			   double theta = Math.toRadians(15);
+			   double phi = Math.acos(1 - u *(1 - Math.cos(theta)));
+			   
+			   double azimuth = Math.random() * 2 * Math.PI;
+			   double x = Math.cos(azimuth) * Math.sin(phi);
+			   double y = Math.random() * 0.5 + 0.5;
+			   double z = Math.sin(azimuth) * Math.sin(phi);
+			   
+			   Vector vect = new Vector(x,y,z).multiply(1.5);//3
 			   return vect.normalize();
 	 	   }
 		   
