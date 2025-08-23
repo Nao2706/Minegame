@@ -37,6 +37,7 @@ import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.SmallFireball;
+import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.TNTPrimed;
@@ -454,9 +455,66 @@ public class EventRandoms implements Listener{
 //			new Flare(player, player.getInventory().getItemInMainHand(),player.getEyeLocation(),plugin);
 //			return;
 //		}
-		
+		GameConditions gc = new GameConditions(plugin);
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR) {
 			if (e.getItem() != null) {
+				
+				
+				
+				if(e.getItem().isSimilar(Items.INTERCAMB.getValue())) {
+					
+					if(gc.isWorldAllowedForItem(player.getLocation().getWorld().getName())) {
+						e.setCancelled(true);
+						player.sendTitle(""+ChatColor.RED+ChatColor.BOLD+"Mundo Bloqueado",ChatColor.GRAY+"No puedes usar ese Item Aqui.", 20, 20,20);
+						return;
+					}
+					
+					Location loc = player.getLocation();
+					Snowball sn = (Snowball) loc.getWorld().spawnEntity(loc.add(0, 1.6, 0), EntityType.SNOWBALL);
+					sn.setVelocity(loc.getDirection().multiply(3));
+					sn.setCustomName("intercamb");
+					sn.setShooter(player);
+					e.setCancelled(true);
+					removeItemstackCustom(player,e.getItem());
+				}
+				
+				if(e.getItem().isSimilar(Items.DROPPER.getValue())) {
+					
+					if(gc.isWorldAllowedForItem(player.getLocation().getWorld().getName())) {
+						e.setCancelled(true);
+						player.sendTitle(""+ChatColor.RED+ChatColor.BOLD+"Mundo Bloqueado",ChatColor.GRAY+"No puedes usar ese Item Aqui.", 20, 20,20);
+						return;
+					}
+					
+					Location loc = player.getLocation();
+					Snowball sn = (Snowball) loc.getWorld().spawnEntity(loc.add(0, 1.6, 0), EntityType.SNOWBALL);
+					sn.setVelocity(loc.getDirection().multiply(3));
+					sn.setCustomName("dropper");
+					sn.setShooter(player);
+					e.setCancelled(true);
+					removeItemstackCustom(player,e.getItem());
+				}
+				
+				if(e.getItem().isSimilar(Items.GLASSHIELD.getValue())) {
+					
+					if(gc.isWorldAllowedForItem(player.getLocation().getWorld().getName())) {
+						e.setCancelled(true);
+						player.sendTitle(""+ChatColor.RED+ChatColor.BOLD+"Mundo Bloqueado",ChatColor.GRAY+"No puedes usar ese Item Aqui.", 20, 20,20);
+						return;
+					}
+					
+					Location loc = player.getLocation();
+					for(int i = 0 ; i < 2 ; i++) {
+							FallingBlock f =  player.getWorld().spawnFallingBlock(loc.add(0,i,0), Material.GREEN_STAINED_GLASS.createBlockData());
+							f.setGravity(false);
+							f.setInvulnerable(true);
+							f.setTicksLived(100);
+							f.setDropItem(false);
+					}
+					e.setCancelled(true);
+					removeItemstackCustom(player,e.getItem());
+				}
+				
 				if(e.getItem().isSimilar(Items.TNTARROW.getValue())) {
 					e.setCancelled(true);
 					TNTPrimed ptnt = (TNTPrimed) player.getWorld().spawnEntity(player.getLocation().add(0.5,1,0.5),EntityType.TNT);
@@ -528,7 +586,7 @@ public class EventRandoms implements Listener{
 		}
 		
 		
-		GameConditions gc = new GameConditions(plugin);
+		
 		if(gc.isPlayerinGame(player)) {
 			if(e.getHand() == EquipmentSlot.OFF_HAND)return;
 				
@@ -2116,8 +2174,68 @@ public class EventRandoms implements Listener{
 				  Entity entidadhit = e.getHitEntity();
 				 
 				  if(entidadhit != null) {
-					    if(!gc.isPlayerinGame(player)) return;
-					    
+					  		
+					  		if(projectile.getCustomName() != null) {
+					  			String nameprojec = ChatColor.stripColor(projectile.getCustomName());
+								  if(nameprojec.equals("intercamb")) {
+						        	  Player shooter = (Player) projectile.getShooter();
+						  	        
+			
+						  	          Location savedLocation = shooter.getLocation();
+						  	          Location victim = entidadhit.getLocation();
+						  	          
+						  	          shooter.teleport(victim);
+						  	          entidadhit.teleport(savedLocation);
+						          }
+								  
+								  if(nameprojec.equals("dropper")) {
+						        	  Player shooter = (Player) projectile.getShooter();
+						  	          
+							        	  if(entidadhit instanceof Player) {
+							        		  Player target = (Player) entidadhit;
+							        		  
+							        		  if(target.getInventory().getContents().length >= 1) {
+													for (ItemStack itemStack : target.getInventory().getContents()) {
+													if(itemStack == null) continue;
+															
+														  target.getWorld().dropItemNaturally(target.getLocation(), itemStack);
+									                       target.getInventory().removeItem(itemStack);
+								                    }
+													target.getInventory().clear();
+													
+												}
+											
+													target.setVelocity(projectile.getLocation().getDirection().multiply(3).setY(2));
+													target.sendMessage(ChatColor.GREEN+shooter.getName() + ChatColor.YELLOW + " tiro tu inventario al piso para robarte.");
+													shooter.sendMessage(ChatColor.GREEN + "Le Tiraste el Inventario a "+ChatColor.GOLD+target.getName());
+								  	          
+								          }
+						        	  }else{
+						        		  if(entidadhit instanceof InventoryHolder) {
+						        			 Inventory inv = ((InventoryHolder) entidadhit).getInventory();
+						        			  if(inv.getContents().length >= 1) {
+													for (ItemStack itemStack : inv.getContents()) {
+													if(itemStack == null) continue;
+															
+														   entidadhit.getWorld().dropItemNaturally(entidadhit.getLocation(), itemStack);
+														   inv.removeItem(itemStack);
+								                    }
+													inv.clear();
+													
+												}
+						        			 
+						        		  }
+						        		  
+						        		  
+						        		  
+						        	  }
+						        	  
+						        	  
+						  			
+					  		}
+					  	
+					  
+					    if(!gc.isPlayerinGame(player)) return;  
 					    
 					     MobsActions ma = new MobsActions(plugin);
 						 ma.getAttackedZombie(player, entidadhit);

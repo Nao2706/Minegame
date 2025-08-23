@@ -4510,6 +4510,11 @@ public class Comandsmg implements CommandExecutor{
 					player.getInventory().addItem(Items.TNTARROW2.getValue());
 					player.getInventory().addItem(Items.TNTARROW3.getValue());
 					player.getInventory().addItem(Items.TNTARROW4.getValue());
+					
+					
+					player.getInventory().addItem(Items.GLASSHIELD.getValue());
+					player.getInventory().addItem(Items.INTERCAMB.getValue());
+					player.getInventory().addItem(Items.DROPPER.getValue());
 					return true;
 				}else if(args[0].equalsIgnoreCase("lock")) {
 						Block b = player.getTargetBlock((Set<Material>) null, 5);

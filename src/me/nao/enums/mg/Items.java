@@ -197,6 +197,13 @@ import org.bukkit.inventory.meta.ItemMeta;
             ESCUDO2(""+ChatColor.GREEN+ChatColor.BOLD+"ESCUDO LVL 2", Material.SHIELD,"thorns,10/durability,10/knockback,10", 1, ChatColor.GREEN+"Precio: "+ChatColor.RED+"150 de Hierro",ChatColor.YELLOW+ "Te servira para Cubrirte.",ChatColor.YELLOW+ "Eres el Capitan America???"),
             ESCUDO2P(""+ChatColor.GREEN+ChatColor.BOLD+"ESCUDO LVL 2", Material.SHIELD,"thorns,10/durability,10/knockback,10", 1,ChatColor.YELLOW+ "Te servira para Cubrirte.",ChatColor.YELLOW+ "Contra Proyectiles y Explosiones",ChatColor.YELLOW+ "Eres el Capitan America???"),
             
+            INTERCAMB(""+ChatColor.GREEN+ChatColor.BOLD+"INTERCAMBIADOR", Material.SNOWBALL,"durability,5/luck,10",1, ChatColor.GOLD+"Uso:"+ChatColor.RED+" Lanzalo a una Entidad para Cambiar de Lugares."),
+            DROPPER(""+ChatColor.AQUA+ChatColor.BOLD+"DROPPER", Material.SNOWBALL,"durability,5/luck,10",1, ChatColor.GOLD+"Uso:"+ChatColor.RED+" Lanzalo a una Entidad para Dropear sus Cosas."),
+            GLASSHIELD(""+ChatColor.GOLD+ChatColor.BOLD+"GLASS SHIELD", Material.GREEN_STAINED_GLASS,"durability,5/luck,10",1, ChatColor.GOLD+"Uso:"+ChatColor.RED+" Al Activarse si estas dentro, las Flechas no te podran tocar."),
+            SOULTIME(""+ChatColor.WHITE+ChatColor.BOLD+"ALMA EXTERIOR", Material.GREEN_STAINED_GLASS,"durability,5/luck,10",1, ChatColor.GOLD+"Uso:"+ChatColor.RED+" Al Activarse podras entrar en Modo Espectador por un Tiempo para Explorar."),
+            EXPLOSIVEDRON(""+ChatColor.RED+ChatColor.BOLD+"DRON EXPLOSIVO", Material.GREEN_STAINED_GLASS,"durability,5/luck,10",1, ChatColor.GOLD+"Uso:"+ChatColor.RED+" Al Activarse podras entrar en Modo Espectador por un Tiempo para Explotar hacia una entidad."),
+            GHOST(""+ChatColor.WHITE+ChatColor.BOLD+"FANTASMA", Material.GREEN_STAINED_GLASS,"durability,5/luck,10",1, ChatColor.GOLD+"Uso:"+ChatColor.RED+" Al Activarse podras entrar en Modo Espectador por 5 Segs usalo para Moverte."),
+
             
             ADELANTE(""+ChatColor.GOLD+ChatColor.BOLD+"SIGUIENTE PAGINA", Material.GREEN_STAINED_GLASS_PANE,null,1, ChatColor.GREEN+"Nota:"+ChatColor.RED+" Ve la siguiente pagina."),
             ATRAS(""+ChatColor.GOLD+ChatColor.BOLD+"PAGINA ANTERIOR", Material.RED_STAINED_GLASS_PANE,null,1, ChatColor.GREEN+"Nota:"+ChatColor.RED+" Ve la anterior pagina.");
