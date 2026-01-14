@@ -29,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 //import java.util.stream.Collectors;
 //import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -92,7 +94,7 @@ import me.nao.scoreboard.mg.MgScore;
 import me.nao.teams.mg.MgTeams;
 import me.nao.timers.mg.AdventureTemp;
 import me.nao.timers.mg.DialogRun;
-import me.nao.timers.mg.InfectedTemp;
+import me.nao.timers.mg.FreeForAllTemp;
 import me.nao.timers.mg.ResistenceTemp;
 import me.nao.topusers.mg.PointsManager;
 import me.nao.utils.mg.Utils;
@@ -115,12 +117,13 @@ public class GameConditions {
 	 
 	public void mgJoinToTheGames(Player player,String map) {
 		if(!existMap(map)) return;
-		loadDataMap(map);
+		  loadDataMap(map); 
+		
 		
 		if(canJoinToTheMap(player,map)){
 			
 			if(existProblemBetweenInventorys(map)) {
-				player.sendMessage(ChatColor.RED+"Error conflicto de inventarios llama a un Administrador.");
+				player.sendMessage(ChatColor.RED+"Inventory: Error conflicto de inventarios llama a un Administrador.");
 				return;
 			}
 				MgTeams mt = new MgTeams(plugin);
@@ -153,10 +156,9 @@ public class GameConditions {
 		MgScore sco = new MgScore(plugin);
 		sco.ClearScore(player);
 		
-		if(ms instanceof GameAdventure) {
-			GameAdventure ga = (GameAdventure) ms;
-			List<String> spectador = ga.getSpectators();
-			List<String> join = ga.getParticipants();
+	
+			List<String> spectador = ms.getSpectators();
+			List<String> join = ms.getParticipants();
 			
 			
 			if(part == GameStatus.ESPERANDO || part == GameStatus.COMENZANDO) {
@@ -178,15 +180,15 @@ public class GameConditions {
 			
 			if(spectador.contains(player.getName())) {
 				sendMessageToUsersOfSameMapLessPlayer(player, "&fEl jugador &a"+player.getName()+" &fsalio del Modo Espectador.\n&c[&bTotal de Espectadores&e: &5"+(spectador.size() - 1)+"&c]");
-				ga.getBossbar().removePlayer(player);
+				ms.getBossbar().removePlayer(player);
 				showBossBarsTimers(player, ms);
 			}else {
 				//" "+Utils.pingLevel(player.getPing())+
 				if(player.getPing() >= 150) {
 					sendMessageToUsersOfSameMapLessPlayer(player,Utils.pingLevel(player.getPing()));
-					sendMessageToUsersOfSameMapLessPlayer(player,"&eA Salido &a"+player.getName()+"&c(&6"+(ga.getParticipants().size()-1)+"&e/&6"+getMaxPlayerMap(pl.getMapName())+"&c)");
+					sendMessageToUsersOfSameMapLessPlayer(player,"&eA Salido &a"+player.getName()+"&c(&6"+(ms.getParticipants().size()-1)+"&e/&6"+getMaxPlayerMap(pl.getMapName())+"&c)");
 				}else {
-					sendMessageToUsersOfSameMapLessPlayer(player,"&eA Salido &a"+player.getName()+"&c(&6"+(ga.getParticipants().size()-1)+"&e/&6"+getMaxPlayerMap(pl.getMapName())+"&c)");
+					sendMessageToUsersOfSameMapLessPlayer(player,"&eA Salido &a"+player.getName()+"&c(&6"+(ms.getParticipants().size()-1)+"&e/&6"+getMaxPlayerMap(pl.getMapName())+"&c)");
 
 				}
 				
@@ -199,7 +201,7 @@ public class GameConditions {
 			 player.sendMessage(Utils.colorTextChatColor("&aHas Salido del Mapa: "+mt.replaceAll("%player%",player.getName())));
 			 restorePlayer(player);
 			
-		}
+		
 		
 //		else if(ms instanceof GameNexo) {
 //			//GameNexo gn = (GameNexo) ms;
@@ -246,36 +248,44 @@ public class GameConditions {
 		if(!isPlayerinGame(player)) return;
 		
 		PlayerInfo pl = plugin.getPlayerInfoPoo().get(player);
-		GameAdventure ga = (GameAdventure) plugin.getGameInfoPoo().get(pl.getMapName());
+		GameInfo gi = plugin.getGameInfoPoo().get(pl.getMapName());
 		
-		if(ga.isAllowedJoinWithOwnInventory() && !ga.getSpectators().contains(player.getName())) {
-			if(ga.getGameStatus() == GameStatus.ESPERANDO || ga.getGameStatus() == GameStatus.COMENZANDO) {
-				mgLeaveOfTheGame(player);
-				return;
-			}
-			//si estas muerto te puedes ir
-			if(ga.getDeadPlayers().contains(player.getName())) {
-				mgLeaveOfTheGame(player);
-			}else{
-				//salir solo si debajo hay un structure block (posible cambio por un cuboid zone a future)
-				Block block = player.getLocation().getBlock();
-				Block b = block.getRelative(0, -2, 0);
-				if(b.getType() != Material.STRUCTURE_BLOCK) {
-    				 player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 20.0F, 1F);
-    				 player.sendMessage("");
-					 player.sendMessage(Utils.colorTextChatColor("&c&l!!! &e&lADVERTENCIA &c&l!!!"));
-					 player.sendMessage(Utils.colorTextChatColor("&c- &eDebes estar dentro de una Zona Segura para Salirte&c."));
-					 player.sendMessage(Utils.colorTextChatColor("&c- &eOh debes haber muerto&c."));
-					 player.sendMessage(Utils.colorTextChatColor("&e⚠ &6Si te &c&lDesconectas &6fuera de una &a&lZona segura &6tu Inventario se &c&lDropeara &e⚠"));
-					 player.sendMessage("");
-				}else {
+		if(gi instanceof GameAdventure) {
+			GameAdventure ga = (GameAdventure) gi;
+			if(ga.isAllowedJoinWithOwnInventory() && !ga.getSpectators().contains(player.getName())) {
+				if(ga.getGameStatus() == GameStatus.ESPERANDO || ga.getGameStatus() == GameStatus.COMENZANDO) {
 					mgLeaveOfTheGame(player);
+					return;
 				}
-				return;
+				//si estas muerto te puedes ir
+				if(ga.getDeadPlayers().contains(player.getName())) {
+					mgLeaveOfTheGame(player);
+				}else{
+					//salir solo si debajo hay un structure block (posible cambio por un cuboid zone a future)
+					Block block = player.getLocation().getBlock();
+					Block b = block.getRelative(0, -2, 0);
+					if(b.getType() != Material.STRUCTURE_BLOCK) {
+	    				 player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 20.0F, 1F);
+	    				 player.sendMessage("");
+						 player.sendMessage(Utils.colorTextChatColor("&c&l!!! &e&lADVERTENCIA &c&l!!!"));
+						 player.sendMessage(Utils.colorTextChatColor("&c- &eDebes estar dentro de una Zona Segura para Salirte&c."));
+						 player.sendMessage(Utils.colorTextChatColor("&c- &eOh debes haber muerto&c."));
+						 player.sendMessage(Utils.colorTextChatColor("&e⚠ &6Si te &c&lDesconectas &6fuera de una &a&lZona segura &6tu Inventario se &c&lDropeara &e⚠"));
+						 player.sendMessage("");
+					}else {
+						mgLeaveOfTheGame(player);
+					}
+					return;
+				}
+			}else {
+				mgLeaveOfTheGame(player);
 			}
 		}else {
 			mgLeaveOfTheGame(player);
 		}
+		
+		
+
 		return;
 	}
 	
@@ -288,26 +298,31 @@ public class GameConditions {
 	
 		
 		PlayerInfo pl = plugin.getPlayerInfoPoo().get(player);
-		GameAdventure ga = (GameAdventure) plugin.getGameInfoPoo().get(pl.getMapName());
-		if(ga.isAllowedJoinWithOwnInventory() && !ga.getSpectators().contains(player.getName())) {
-			
-			if(ga.getDeadPlayers().contains(player.getName())) {
-				mgLeaveOfTheGame(player);
-			
-			}else{
-				Block block = player.getLocation().getBlock();
-				Block b = block.getRelative(0, -2, 0);
-				if(b.getType() != Material.STRUCTURE_BLOCK) {
-					GameIntoMap ci = new GameIntoMap(plugin);
-					ci.PlayerDropAllItems(player);
+		GameInfo gi = plugin.getGameInfoPoo().get(pl.getMapName());
+		
+	
+		if(gi.isAllowedJoinWithOwnInventory() && !gi.getSpectators().contains(player.getName())) {
+			if(gi instanceof GameAdventure) {
+				GameAdventure ga = (GameAdventure) gi;
+				if(ga.getDeadPlayers().contains(player.getName())) {
 					mgLeaveOfTheGame(player);
 				
-					 return;
 				}else{
-					mgLeaveOfTheGame(player);
+					Block block = player.getLocation().getBlock();
+					Block b = block.getRelative(0, -2, 0);
+					if(b.getType() != Material.STRUCTURE_BLOCK) {
+						GameIntoMap ci = new GameIntoMap(plugin);
+						ci.PlayerDropAllItems(player);
+						mgLeaveOfTheGame(player);
+					
+						 return;
+					}else{
+						mgLeaveOfTheGame(player);
+					}
+					
 				}
-				
 			}
+	
 		}else{
 			mgLeaveOfTheGame(player);
 		}
@@ -349,8 +364,48 @@ public class GameConditions {
 			}
 		 	 
 			if(ga.getMapStatus() == MapStatus.COMPLETE) {
-				if(ga.hasMapCooldown()) {
-					setCooldownMap(name, ga.getCooldown());
+				if(ga.hasMapCooldownForReplay()) {
+					setCooldownMapForReplay(name, ga.getCooldownForReplay());
+				}
+			}
+			//set timer
+			
+				checkGenerator(gi);
+				
+				plugin.getEntitiesFromFlare().remove(name);
+				plugin.getGameInfoPoo().remove(name);
+
+		}else if(gi instanceof GameFreeForAll) {
+			GameFreeForAll ga = (GameFreeForAll) gi;
+			List<Player> player = ConvertStringToPlayer(ga.getParticipants());
+			
+			 
+			if(!ga.getWinnersPlayers().isEmpty()) {
+				setTimeOfRecordinMap(name,ga.getWinnersPlayers());
+				//ga.setMapStatus(MapStatus.COMPLETE);
+			}else {
+				ga.setMapStatus(MapStatus.INCOMPLETE);
+			} 
+			 
+			MgScore sco = new MgScore(plugin);
+		
+			for(Player target : player) {
+				
+				sco.ClearScore(target);
+				restorePlayer(target);
+				 
+			}
+			
+			List<Player> spec = ConvertStringToPlayer(ga.getSpectators());
+			 
+			for(Player target : spec) {
+				sco.ClearScore(target);
+				restorePlayer(target);
+			}
+		 	 
+			if(ga.getMapStatus() == MapStatus.COMPLETE) {
+				if(ga.hasMapCooldownForReplay()) {
+					setCooldownMapForReplay(name, ga.getCooldownForReplay());
 				}
 			}
 			//set timer
@@ -581,7 +636,7 @@ public class GameConditions {
 		return;
 	}
 	
-	public void setCooldownMap(String map , String date) {
+	public void setCooldownMapForReplay(String map , String date) {
 		 String cooldownreplay = date;
 		 
 		 String[] split = cooldownreplay.split(",");
@@ -764,15 +819,9 @@ public class GameConditions {
 			   int b = Integer.valueOf(t[1]);
 			   int c = Integer.valueOf(t[2]);
 				//ym.set("Start.Actions", start);
-			    String[] coords = ym.getString("Spawn").split("/");
-			    String world = coords[0];
-			    Double x = Double.valueOf(coords[1]);
-			    Double y = Double.valueOf(coords[2]);
-			    Double z = Double.valueOf(coords[3]);
-			    Float yaw = Float.valueOf(coords[4]);
-			    Float pitch = Float.valueOf(coords[5]);
+			  
 			    
-			        String[] sts = ym.getString("Start.Sound-of-Mision").split(";");
+			      String[] sts = ym.getString("Start.Sound-of-Mision").split(";");
 			      try {
 			    	  
 			    	   
@@ -785,8 +834,25 @@ public class GameConditions {
 			       }
 			
 			    player.setInvulnerable(false);
-				Location l = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch).add(0.5,0,0.5);
-				player.teleport(l);
+			    
+			    if(gm instanceof GameAdventure) {
+				    String[] coords = ym.getString("Spawn").split("/");
+				    String world = coords[0];
+				    Double x = Double.valueOf(coords[1]);
+				    Double y = Double.valueOf(coords[2]);
+				    Double z = Double.valueOf(coords[3]);
+				    Float yaw = Float.valueOf(coords[4]);
+				    Float pitch = Float.valueOf(coords[5]);
+				    
+					Location l = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch).add(0.5,0,0.5);
+					player.teleport(l);
+			    }else if(gm instanceof GameFreeForAll) {
+			    	
+			    	GameFreeForAll ffa = (GameFreeForAll) gm;
+			    	Random r = new Random();
+			    	Location loc = ffa.getSpawns().get(r.nextInt(ffa.getSpawns().size()));
+			    	player.teleport(loc);
+			    }
 				setHeartsInGame(player, map);
 				//este send message es un separador de chat contra la cuenta atras xd
 				player.sendMessage(" ");
@@ -867,13 +933,13 @@ public class GameConditions {
 			GameAdventure ga = (GameAdventure) game;
 			
 			List<String> vivo = ga.getAlivePlayers();
-			List<String> arrivo = ga.getWinnersPlayers();
+			List<String> win = ga.getWinnersPlayers();
 			List<String> spectador = ga.getSpectators();
 			List<String> deads = ga.getDeadPlayers();
 			
 			
 			
-				if(vivo.contains(player.getName()) && !arrivo.contains(player.getName())) {
+				if(vivo.contains(player.getName()) && !win.contains(player.getName())) {
 					if(player.getGameMode() != GameMode.ADVENTURE) {
 						player.setGameMode(GameMode.ADVENTURE);
 					}
@@ -915,11 +981,16 @@ public class GameConditions {
 			 
 			 if(gi.getGameType() == GameType.ADVENTURE) {
 					AdventureTemp t = new AdventureTemp(plugin);
-					t.Inicio(gi.getMapName());
+					t.startMg(gi.getMapName()); 
 				}else if(gi.getGameType() == GameType.RESISTENCE) {
 					ResistenceTemp t = new ResistenceTemp(plugin);
-					t.Inicio(gi.getMapName());
+					t.startMg(gi.getMapName());
+				}else if(gi.getGameType() == GameType.FREEFORALL) {
+					
+					FreeForAllTemp t = new FreeForAllTemp(plugin);
+					t.startMg(gi.getMapName());
 				}
+			 
 		}else {
 			player.sendMessage(ChatColor.RED+"La partida debe estar en Estatus de Esperando para Forzar un Inicio.");
 		}
@@ -989,10 +1060,13 @@ public class GameConditions {
 	public void addPlayerToGame(Player player ,String mision) {
 	
 			GameInfo mis = plugin.getGameInfoPoo().get(mision);
+			if(!mis.getParticipants().contains(player.getName())) {
+				mis.getParticipants().add(player.getName());
+			}
+			
 			if(mis instanceof GameAdventure) {
 				GameAdventure ga = (GameAdventure) mis;
-				if(!ga.getParticipants().contains(player.getName())) {
-					ga.getParticipants().add(player.getName());
+				if(!ga.getAlivePlayers().contains(player.getName())) {
 					ga.getAlivePlayers().add(player.getName());
 				}
 			}
@@ -1027,55 +1101,44 @@ public class GameConditions {
 	
 	public void spectatorAddToGame(Player player ,String mision) {
 		
-		GameInfo mis = plugin.getGameInfoPoo().get(mision);
-		if(mis instanceof GameAdventure) {
-			GameAdventure ga = (GameAdventure) mis;
-			if(!ga.getSpectators().contains(player.getName())) {
-				ga.getSpectators().add(player.getName());
+			GameInfo gi = plugin.getGameInfoPoo().get(mision);
+			if(!gi.getSpectators().contains(player.getName())) {
+				gi.getSpectators().add(player.getName());
 			}
-		}
+		
 	}
 	
 	public void playerArriveToTheWin(Player player ,String mision) {
 		
-		GameInfo mis = plugin.getGameInfoPoo().get(mision);
-		if(mis instanceof GameAdventure) {
-			GameAdventure ga = (GameAdventure) mis;
-			if(!ga.getWinnersPlayers().contains(player.getName())) {
-				ga.getWinnersPlayers().add(player.getName());
+		GameInfo gi = plugin.getGameInfoPoo().get(mision);
+	
+			if(!gi.getWinnersPlayers().contains(player.getName())) {
+				gi.getWinnersPlayers().add(player.getName());
 			}
-		}
+		
 	}
 	
 	 
 	public void removeAllPlayerToGame(Player player ,String mision) {
 		
-		GameInfo mis = plugin.getGameInfoPoo().get(mision);
-		if(mis instanceof GameAdventure) {
-			GameAdventure ga = (GameAdventure) mis;
-			if(mis.getGameType() == GameType.ADVENTURE || mis.getGameType() == GameType.RESISTENCE ) {
-				MgTeams t = new MgTeams(plugin);
+		GameInfo gi = plugin.getGameInfoPoo().get(mision);
+		
+		if(gi.getParticipants().remove(player.getName()));
+		if(gi.getWinnersPlayers().remove(player.getName()));
+		if(gi.getSpectators().remove(player.getName()));
+		MgTeams t = new MgTeams(plugin);
+		t.RemoveAllPlayer(player);
+		
+		if(gi instanceof GameAdventure) {
+			GameAdventure ga = (GameAdventure) gi;
 			
-				if(ga.getParticipants().remove(player.getName()));
-				if(ga.getAlivePlayers().remove(player.getName()));
-				if(ga.getDeadPlayers().remove(player.getName()));
-				if(ga.getWinnersPlayers().remove(player.getName()));
-				if(ga.getSpectators().remove(player.getName()));
-				plugin.getPlayerInfoPoo().remove(player);
-				t.RemoveAllPlayer(player);
-			}
+			if(ga.getAlivePlayers().remove(player.getName()));
+			if(ga.getDeadPlayers().remove(player.getName()));			
+	
+				
 		}
 		
-//		else if(mis instanceof GameNexo) {
-//			GameNexo ga = (GameNexo) mis;
-//			if(ga.getGameType() == GameType.NEXO ) {
-//				if(ga.getParticipants().remove(player.getName()));
-//				if(ga.getSpectators().remove(player.getName()));
-////				if(ga.getBlueTeamMg().remove(player.getName()))
-////				if(ga.getRedTeamMg().remove(player.getName()))
-//				plugin.getPlayerInfoPoo().remove(player);
-//			}
-//		}
+		plugin.getPlayerInfoPoo().remove(player);
 	}
 	
 	public void playerWinnerReward(Player player) {
@@ -1085,28 +1148,15 @@ public class GameConditions {
 		PlayerInfo pl = plugin.getPlayerInfoPoo().get(player);
 		String name = pl.getMapName();
 		GameInfo ms = plugin.getGameInfoPoo().get(name);
-		
-		if(ms instanceof GameAdventure) {
-			GameAdventure ga = (GameAdventure) ms;
-			if(ms.getGameType() == GameType.ADVENTURE) {
-				List<String> arrivo = ga.getWinnersPlayers();
-				List<String> spectador = ga.getSpectators();
-				
-				if(spectador.contains(player.getName()) || !arrivo.contains(player.getName())) return;
-			
-			}
-			
-			if(ms.getGameType() == GameType.RESISTENCE) {
-				List<String> vivo = ga.getAlivePlayers();
-				List<String> spectador = ga.getSpectators();
-				
-				if(spectador.contains(player.getName()) || !vivo.contains(player.getName())) return;
-				
-			}
-		}	
+		 
+		List<String> winnerp = ms.getWinnersPlayers();
+		List<String> spectador = ms.getSpectators();
 		
 		
-		if(ms.isRankedMap()) {
+		if(!winnerp.contains(player.getName()) || spectador.contains(player.getName()));	
+		
+		
+		if(ms.isRankedMap() && ms.getGameType() == GameType.ADVENTURE) {
 			PointsManager pm = new PointsManager(plugin) ;
 			pm.WinGamePoints(player);
 		}
@@ -1144,21 +1194,16 @@ public class GameConditions {
 		   
 	     player.sendTitle(ChatColor.translateAlternateColorCodes('&',mision.getString("Win.Tittle-of-Win").replaceAll("%player%", player.getName())), ChatColor.translateAlternateColorCodes('&',mision.getString("Win.SubTittle-of-Win").replaceAll("%player%", player.getName())), aw, aw2, aw3);
 
-		  if(mision.getBoolean("Win.Reward-Position-Top")) {
+		  if(mision.getBoolean("Win.Reward-Position-Top") || ms instanceof GameFreeForAll) {
 			  
-				HashMap<String, Integer> scores = new HashMap<>();
-			  
-				if(ms instanceof GameAdventure) {
-					GameAdventure ga = (GameAdventure) ms;
+						HashMap<String, Integer> scores = new HashMap<>();
+	
 					
-						List<String> part = ga.getParticipants();
-						List<String> spectador = ga.getSpectators();
-						List<Player> players = ConvertStringToPlayer(part);
+						List<Player> players = ConvertStringToPlayer(ms.getParticipants());
 						
 						for(Player user : players) {
 							PlayerInfo pi = plugin.getPlayerInfoPoo().get(user);
-							
-							if(spectador.contains(user.getName())) continue;
+				
 							 scores.put(user.getName(), pi.getGamePoints().getKills());	
 						}
 						
@@ -1208,7 +1253,7 @@ public class GameConditions {
 							}
 						}
 				
-				}
+				
 				
 		  }else {
 			  if(!winreward.isEmpty()) {
@@ -1235,29 +1280,18 @@ public class GameConditions {
 		String name = pl.getMapName();
 		GameInfo ms = plugin.getGameInfoPoo().get(name);
 		
+		//NO HAY PERDIDA EN ESTE MODO
+		if(ms instanceof GameFreeForAll) return;
 		
-		if(ms instanceof GameAdventure) {
-			GameAdventure ga = (GameAdventure) ms;
-			if(ms.getGameType() == GameType.ADVENTURE) {
-				List<String> arrivo = ga.getWinnersPlayers();
-				List<String> spectador = ga.getSpectators();
-				
-				if(spectador.contains(player.getName()) || arrivo.contains(player.getName())) return;
-			
-			}
-			
-			
-			if(ms.getGameType() == GameType.RESISTENCE) {
-				List<String> vivo = ga.getAlivePlayers();
-				List<String> spectador = ga.getSpectators();
-				
-				if(spectador.contains(player.getName()) || vivo.contains(player.getName())) return;
-
-			}
+		List<String> winnerp = ms.getWinnersPlayers();
+		List<String> spectador = ms.getSpectators();
 		
-		}
+		
+		if(!winnerp.contains(player.getName()) || spectador.contains(player.getName()));	
+		
 		
 	
+		
 		if(isMapRanked(name)) {
 			PointsManager pm = new PointsManager(plugin) ;
 			pm.LoseGamePoints(player);
@@ -1304,6 +1338,7 @@ public class GameConditions {
 
 			}}
 	}
+	
 	
 	public void startGameActions(String map) {
 		FileConfiguration mision = getGameConfig(map);
@@ -1382,201 +1417,139 @@ public class GameConditions {
 	}
 	
 	//TODO LOAD MAP
-	public boolean loadDataMap(String map) {
+	public void loadDataMap(String map) {
 		 
-		
+		 
 		if(!plugin.getGameInfoPoo().containsKey(map)) {
 			try {
 				FileConfiguration game = getGameConfig(map);
 				String time = game.getString("Game-Timer-H-M-S");
 				String enumtype = game.getString("Type-Map").toUpperCase();
-				GameType type = GameType.valueOf(enumtype);
+				GameType type = GameType.matchMode(enumtype);
 				int maxplayers = game.getInt("Max-Player");
 				int minplayers = game.getInt("Min-Player");
 				 
 				if(type == null) {
 					sendMessageToConsole(ChatColor.RED+"Error en el tipo de Juego "+enumtype+" no existe.");
-					return false;
+					List<String> result = Arrays.stream(GameType.values()).map(Object:: toString).collect(Collectors.toList());
+					sendMessageToConsole(ChatColor.GOLD+"Modos Disponibles:");
+					for(String s : result) {
+						sendMessageToConsole(ChatColor.GREEN+s);
+					}
+					sendMessageToConsole(ChatColor.GOLD+"Asegurate de escribirlos Bien");
+					
+					return;
 				}
 				
 				if(maxplayers < 0) {
 					sendMessageToConsole(ChatColor.RED+"Error el Maximo de Jugadores debe ser Mayor a 0");
-					return false;
+					return;
 				}
 				
 				if(minplayers < 0) {
 					sendMessageToConsole(ChatColor.RED+"Error el Minimo de Jugadores debe ser Mayor a 0");
-					return false;
+					return;
 				}
 				
 				if(maxplayers <= minplayers) {
 					sendMessageToConsole(ChatColor.RED+"Error el El Maximo de Juagdores y Minimo deben ser diferentes.");
 					sendMessageToConsole(ChatColor.RED+"Ejemplo Maximo 5 Minimo 1");
-					return false;
+					return;
 				}
 				
 				BossBar boss = null ;
 				if(type == GameType.ADVENTURE) {
+					
 					boss = Bukkit.createBossBar(""+ChatColor.GREEN+ChatColor.BOLD+"Bienvenido al Mapa "+ChatColor.GOLD+ChatColor.BOLD+map+ChatColor.RED+ChatColor.BOLD+" Modo: "+ChatColor.GREEN+ChatColor.BOLD+"Aventura",BarColor.GREEN, BarStyle.SOLID,  null ,null);
 				}else if(type == GameType.RESISTENCE) {
+					
 					boss = Bukkit.createBossBar(""+ChatColor.GREEN+ChatColor.BOLD+"Bienvenido al Mapa "+ChatColor.GOLD+ChatColor.BOLD+map+ChatColor.RED+ChatColor.BOLD+" Modo: "+ChatColor.DARK_RED+ChatColor.BOLD+"Resistencia",BarColor.GREEN, BarStyle.SOLID,  null ,null);
-				}else if(type == GameType.RESISTENCE) {
-					boss = Bukkit.createBossBar(""+ChatColor.GREEN+ChatColor.BOLD+"Bienvenido al Mapa "+ChatColor.GOLD+ChatColor.BOLD+map+ChatColor.RED+ChatColor.BOLD+" Modo: "+ChatColor.RED+ChatColor.BOLD+"Todos Contra Todos",BarColor.GREEN, BarStyle.SOLID,  null ,null);
+				}else if(type == GameType.FREEFORALL) {
+					
+					boss = Bukkit.createBossBar(""+ChatColor.GREEN+ChatColor.BOLD+"Bienvenido al Mapa "+ChatColor.GOLD+ChatColor.BOLD+map+ChatColor.RED+ChatColor.BOLD+" Modo: "+ChatColor.AQUA+ChatColor.BOLD+"Todos Contra Todos",BarColor.GREEN, BarStyle.SOLID,  null ,null);
 				}
 			    boss.setVisible(true);
 			   
-			   
 			    
+			    GameInfo gi = new GameInfo();
 			    
+		    	gi.setMapName(map);
+		    	gi.setTimeMg(time);
+		    	gi.setGameType(type);
+		    	gi.setMaxPlayersinMap(maxplayers);
+		    	gi.setMinPlayersinMap(minplayers);
+		    	gi.setBossbar(boss);	    	
+		    	gi.setObjetivesMg(loadObjetivesOfGames(map));
+		      
+		    	gi.setGameTimeActions(loadGameTimeActions(map));
+		    	gi.setCuboidZones(loadCuboidZones(map));
+		    	gi.setLootTableLimit(getLootTableLimit());
+		    	gi.setGenerators(loadMapGenerators(map));
+		    	gi.setMobsGenerators(loadMapMobsGenerators(map));
+		    	gi.setPvpinMap(isPvPAllowed(map));
+		    	gi.setCountDownStart(loadCountdownMap(map));
+		    	gi.setGameTime(loadMapGameTime(map, time)); 
+		    	gi.setBarriersinMap(hasBarriersMap(map));
+		    	gi.setAllowedJoinWithOwnInventory(canJoinWithYourInventory(map));
+		    	gi.setTimersEvents(loadDataExecutableTimer(map));
+		    	 
+		    	gi.setSpawnItemRange(getSpawnItemRange(map));
+		    	gi.setSpawnMobRange(getSpawnMobRange(map));
+		    	gi.setToxicZoneRange(getToxicZoneRange(map));
+		    	  
+		    	gi.setPointsPerKills(getPointsPerKills(map));
+		    	gi.setPointsPerDeads(getPointsPerDeads(map));
+		    	gi.setPointsPerRevive(getPointsPerRevive(map));
+		    	gi.setPointsPerHelpRevive(getPointsPerHelpRevive(map));
+		    	gi.setPointsBonus(getPointsBonus(map));
+		    	gi.setDispenserRange(getDispenserRange(map));
+		    	gi.setRankedMap(isMapRanked(map));
+		    	gi.setPointsLosePorcent(getPointsLosePorcent(map));
+		    	gi.setMapData(game);			    	
+		    	gi.setLvltoPlay(getLvlToPlay(map));
+		    	gi.setPrestigelvltoPlay(getprestigeLvlToPlay(map));
+
+		    	gi.setDeleteInventoryByTimeOut(hasDeleteInventoryByTimeOut(map));
+		    	gi.sethasMapCooldownForReplay(hasMapCooldownForReplayData(map));
+		    	gi.setMapTimeCooldownForReplay(getMapTimeCooldownForReplayData(map));
+		    	gi.setCleanMapFromEntitys(hasMapCleanedData(map));
 			    
-			    
-			    
+		    	//UNIFICAR UN DIA
+		    	List<Entity> entities = new ArrayList<>();
+		    	 
 			    if(type == GameType.ADVENTURE || type == GameType.RESISTENCE) {
 			    	  //pasar solo una lista para los 4 espacios ojo
-				  
-			 
-				    List<Entity> entities = new ArrayList<>();
-					      
 					     
 			    	GameAdventure ga = new GameAdventure();
-			    	ga.setMapName(map);
-			    	ga.setTimeMg(time);
-			    	ga.setGameType(type);
-			    	ga.setMaxPlayersinMap(maxplayers);
-			    	ga.setMinPlayersinMap(minplayers);
-			    	ga.setBossbar(boss);	    	
-			    	ga.setObjetivesMg(loadObjetivesOfGames(map));
-			      
-			    	ga.setGameTimeActions(loadGameTimeActions(map));
-			    	ga.setCuboidZones(loadCuboidZones(map));
-			    	ga.setLootTableLimit(getLootTableLimit());
-			    	ga.setGenerators(loadMapGenerators(map));
-			    	ga.setMobsGenerators(loadMapMobsGenerators(map));
-			    	ga.setPvpinMap(isPvPAllowed(map));
-			    	ga.setCountDownStart(loadCountdownMap(map));
-			    	ga.setGameTime(loadMapGameTime(map, time)); 
-			    	ga.setBarriersinMap(hasBarriersMap(map));
-			    	ga.setAllowedJoinWithOwnInventory(canJoinWithYourInventory(map));
-			    	ga.setTimersEvents(loadDataExecutableTimer(map));
-			    	
-			    	 
-			    	ga.setSpawnItemRange(getSpawnItemRange(map));
-			    	ga.setSpawnMobRange(getSpawnMobRange(map));
-			    	ga.setToxicZoneRange(getToxicZoneRange(map));
-			    	  
-			    	ga.setPointsPerKills(getPointsPerKills(map));
-			    	ga.setPointsPerDeads(getPointsPerDeads(map));
-			    	ga.setPointsPerRevive(getPointsPerRevive(map));
-			    	ga.setPointsPerHelpRevive(getPointsPerHelpRevive(map));
-			    	ga.setPointsBonus(getPointsBonus(map));
-			    	ga.setDispenserRange(getDispenserRange(map));
-			    	ga.setRankedMap(isMapRanked(map));
-			    	ga.setPointsLosePorcent(getPointsLosePorcent(map));
-			    	ga.setMapData(game);			    	
-			    	ga.setLvltoPlay(getLvlToPlay(map));
-			    	ga.setPrestigelvltoPlay(getprestigeLvlToPlay(map));
-			    	
-			    	ga.setDeleteInventoryByTimeOut(hasDeleteInventoryByTimeOut(map));
-			    	ga.setMapCooldown(getMapCooldownData(map));
-			    	ga.setMapTimeCooldown(getMapTimeCooldownData(map));
-			    	ga.setCleanMapFromEntitys(hasMapCleanedData(map));
-			    	
+			    	ga.copyData(gi);
 			    						
+			    	
 					plugin.getEntitiesFromFlare().put(map,entities);
 					plugin.getGameInfoPoo().put(map, ga);
-			    }   if(type == GameType.FREEFORALL) {
+					
+			    }else if(type == GameType.FREEFORALL) {
 			    	  //pasar solo una lista para los 4 espacios ojo
-					  
-					 
-				    List<Entity> entities = new ArrayList<>();
-					      
-					     
-			    	GameFreeForAll ga = new GameFreeForAll(plugin);
-			    	ga.setMapName(map);
-			    	ga.setTimeMg(time);
-			    	ga.setGameType(type);
-			    	ga.setMaxPlayersinMap(maxplayers);
-			    	ga.setMinPlayersinMap(minplayers);
-			    	ga.setBossbar(boss);	    	
-			    	ga.setObjetivesMg(loadObjetivesOfGames(map));
-			      
-			    	ga.setGameTimeActions(loadGameTimeActions(map));
-			    	ga.setCuboidZones(loadCuboidZones(map));
-			    	ga.setLootTableLimit(getLootTableLimit());
-			    	ga.setGenerators(loadMapGenerators(map));
-			    	ga.setMobsGenerators(loadMapMobsGenerators(map));
-			    	ga.setPvpinMap(isPvPAllowed(map));
-			    	ga.setCountDownStart(loadCountdownMap(map));
-			    	ga.setGameTime(loadMapGameTime(map, time)); 
-			    	ga.setBarriersinMap(hasBarriersMap(map));
-			    	ga.setAllowedJoinWithOwnInventory(canJoinWithYourInventory(map));
-			    	ga.setTimersEvents(loadDataExecutableTimer(map));
-			    	
-			    	 
-			    	ga.setSpawnItemRange(getSpawnItemRange(map));
-			    	ga.setSpawnMobRange(getSpawnMobRange(map));
-			    	ga.setToxicZoneRange(getToxicZoneRange(map));
-			    	  
-			    	ga.setPointsPerKills(getPointsPerKills(map));
-			    	ga.setPointsPerDeads(getPointsPerDeads(map));
-			    	ga.setPointsPerRevive(getPointsPerRevive(map));
-			    	ga.setPointsPerHelpRevive(getPointsPerHelpRevive(map));
-			    	ga.setPointsBonus(getPointsBonus(map));
-			    	ga.setDispenserRange(getDispenserRange(map));
-			    	ga.setRankedMap(isMapRanked(map));
-			    	ga.setPointsLosePorcent(getPointsLosePorcent(map));
-			    	ga.setMapData(game);			    	
-			    	ga.setLvltoPlay(getLvlToPlay(map));
-			    	ga.setPrestigelvltoPlay(getprestigeLvlToPlay(map));
-			    	
-			    	ga.setDeleteInventoryByTimeOut(hasDeleteInventoryByTimeOut(map));
-			    	ga.setMapCooldown(getMapCooldownData(map));
-			    	ga.setMapTimeCooldown(getMapTimeCooldownData(map));
-			    	ga.setCleanMapFromEntitys(hasMapCleanedData(map));
-			    	
-			    						
-					plugin.getEntitiesFromFlare().put(map,entities);
-					plugin.getGameInfoPoo().put(map, ga);
-			    }else if(type == GameType.NEXO) {
-			    	
-			    	
-//			    	GameNexo gn = new GameNexo();
-//			    	gn.setMapName(map);
-//			    	gn.setTimeMg(time);
-//			    	gn.setGameType(type);
-//			    	gn.setMaxPlayersinMap(maxplayers);
-//			    	gn.setMinPlayersinMap(minplayers);
-//			    	gn.setBossbar(boss);	
-//			    	gn.setPvpinMap(isPvPAllowed(map));
-//			    	List<String> t1 = new ArrayList<>();
-//				    List<String> t2 = new ArrayList<>();
-//			    	
-//			    	
-//			    	
-//			    	Location bl = BlueNexo(map);
-//			    	Location rd = RedNexo(map);
-//			    	
-//			    	if(bl == null || rd == null) {
-//			    		
-//			    		System.out.println("LOG-2 NEXO: Error no uno de los Location del Nexo Rojo o Azul no existe mapa: "+map);
-//			    		return;
-//			    	}
-			    	
-					//GameNexo gn = new GameNexo(map ,maxplayers,minplayers,misiontype ,EstadoPartida.ESPERANDO,StopMotivo.NINGUNO,boss,time,LoadObjetivesOfGames(map),participantes,espectador,false,false,t1,t2,bl,rd,100,100);
-				
-					//System.out.println("LOG-3 NEXO: "+gn.ShowGame());
-				
-					//plugin.getGameInfoPoo().put(map, gn);
-			    }
 			    
-			  
+			    	GameFreeForAll ffa = new GameFreeForAll(plugin);
+			    	ffa.copyData(gi);
+			    	ffa.setLimitpoints(loadLimitPointFfa(map));
+			    	ffa.setSpawns(loadMapSpawnsFfa(map));
+			    	
+			    						 
+					plugin.getEntitiesFromFlare().put(map,entities);
+					plugin.getGameInfoPoo().put(map, ffa);
+					
+			    }
+		
+			   
 			}catch(NullPointerException e) {
 				e.printStackTrace();
 				System.out.println("LOG-4 Error en el Mapa "+map);
 			}
-			return true;
+			return;
 		}
-		return false;
+	
+		return;
 	}
 	
 	
@@ -1626,22 +1599,15 @@ public class GameConditions {
 				
 				if(ms.getGameType() == GameType.ADVENTURE) {
 					AdventureTemp t = new AdventureTemp(plugin);
-					t.Inicio(ms.getMapName());
+					t.startMg(ms.getMapName());
+					
 				}else if(ms.getGameType() == GameType.RESISTENCE) {
 					ResistenceTemp t = new ResistenceTemp(plugin);
-					t.Inicio(ms.getMapName());
-				}else if(ms.getGameType() == GameType.FREEFORALL) {
+					t.startMg(ms.getMapName());
 					
-					InfectedTemp t = new InfectedTemp(plugin);
-					t.Inicio(ms.getMapName());
-				}else if(ms.getGameType() == GameType.INFECTED) {
-					InfectedTemp t = new InfectedTemp(plugin);
-					t.Inicio(ms.getMapName());
-				}else if(ms.getGameType() == GameType.NEXO) {
-					//DestroyNexo dn = new DestroyNexo(plugin);
-					//dn.RandomTeam(map);
-//					NexoTemp t = new NexoTemp(plugin);
-//					t.Inicio(ms.getMapName());
+				}else if(ms.getGameType() == GameType.FREEFORALL) {
+					FreeForAllTemp t = new FreeForAllTemp(plugin);
+					t.startMg(ms.getMapName());
 				}
 			}
 		 
@@ -1678,11 +1644,18 @@ public class GameConditions {
     	gi.setPointsLosePorcent(getPointsLosePorcent(map));
     	gi.setMapData(getGameConfig(map));
     	gi.setDeleteInventoryByTimeOut(hasDeleteInventoryByTimeOut(map));
-    	gi.setMapCooldown(getMapCooldownData(map));
-    	gi.setMapTimeCooldown(getMapTimeCooldownData(map));
+    	gi.sethasMapCooldownForReplay(hasMapCooldownForReplayData(map));
+    	gi.setMapTimeCooldownForReplay(getMapTimeCooldownForReplayData(map));
     	gi.setCleanMapFromEntitys(hasMapCleanedData(map));
     	gi.setLvltoPlay(getLvlToPlay(map));
     	gi.setPrestigelvltoPlay(getprestigeLvlToPlay(map));
+    	
+    	if(gi instanceof GameFreeForAll) {
+    		GameFreeForAll ffa = (GameFreeForAll) gi;
+	    	ffa.setLimitpoints(loadLimitPointFfa(map));
+	    	ffa.setSpawns(loadMapSpawnsFfa(map));
+    	}
+    	
     	
 	}
 	
@@ -1902,7 +1875,7 @@ public class GameConditions {
 	    return game.contains("Cuboid-Zones.List");
 	}
 	
-	public boolean getMapCooldownData(String map) {
+	public boolean hasMapCooldownForReplayData(String map) {
 		FileConfiguration game = getGameConfig(map);
 	    return game.getBoolean("Cooldown-For-Replay.Has-Cooldown");
 	}
@@ -1912,7 +1885,7 @@ public class GameConditions {
 	    return game.getBoolean("CleanMapFromEntitys");
 	}	
 	
-	public String getMapTimeCooldownData(String map) {
+	public String getMapTimeCooldownForReplayData(String map) {
 		FileConfiguration game = getGameConfig(map);
 	    return game.getString("Cooldown-For-Replay.Cooldown-Time");
 	}
@@ -2019,19 +1992,19 @@ public class GameConditions {
 	   
 	public void joinSpectator(Player player ,String map) {
 		 //MODO ESPECTADOR no te uniras como jugador
-		 setAndSavePlayer(player,PlayerGameStatus.SPECTATOR, map);
-		 spectatorAddToGame(player, map);
-		 GameInfo ms = plugin.getGameInfoPoo().get(map);
-		 if(ms instanceof GameAdventure) {
+			 setAndSavePlayer(player,PlayerGameStatus.SPECTATOR, map);
+			 spectatorAddToGame(player, map);
+			 GameInfo ms = plugin.getGameInfoPoo().get(map);
+		
 			 	player.setGameMode(GameMode.SPECTATOR);
-				GameAdventure ga = (GameAdventure) ms;
-				 List<String> spectador = ga.getSpectators();
+				
+				 List<String> spectador = ms.getSpectators();
 				 player.sendMessage(ChatColor.GREEN+"Estas como Espectador en el Mapa: "+ChatColor.GOLD+map);
-				 ga.getBossbar().addPlayer(player);
+				 ms.getBossbar().addPlayer(player);
 				 sendMessageToUsersOfSameMapLessPlayer(player, ChatColor.WHITE+"El Jugador "+ChatColor.GREEN+player.getName()+ChatColor.WHITE+" se Unio como Espectador."+ChatColor.RED+"\n["+ChatColor.GREEN+"Total de Espectadores"+ChatColor.YELLOW+": "+ChatColor.DARK_PURPLE+(spectador.size())+ChatColor.RED+"]");
 				 TptoSpawnSpectator(player, map);
 				 showBossBarsTimers(player, ms);
-		 }
+		 
 	}
 
 	
@@ -2207,7 +2180,7 @@ public class GameConditions {
 				 player.sendMessage(ChatColor.GRAY+"Sube tu Nivel. ");
 			 }
 			
-		 }				 if(data.getBoolean("Play-Time.Has-Time")) {
+		 }else if(data.getBoolean("Play-Time.Has-Time")) {
 			 	String time = data.getString("Play-Time.Usage-Time");
 		    	if(time == null || time.isEmpty()){
 		    		if(player.isOp()) {
@@ -2215,13 +2188,13 @@ public class GameConditions {
  						player.sendMessage(ChatColor.RED+"Error de Tiempo: En el Path Usage-Time esta vacio.");
 
 		    		}else {
- 						player.sendMessage(ChatColor.RED+"Error de Tiempo: Contacta a un Administrador");
+ 						player.sendMessage(ChatColor.RED+"Error de Tiempo: Contacta a un Administrador Mapa: "+map);
  					}
 		    		return false;
 		    	}
  			 	
 		        if(!elapsedTime(player,time)) return false;
-		 }else if(mapinfo.hasMapCooldown()) { 
+		 }else if(mapinfo.hasMapCooldownForReplay()) { 
 			if(plugin.getCooldownMap().containsKey(map)){
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a",Locale.ENGLISH);
 				LocalDateTime cooldownmap = plugin.getCooldownMap().get(map);
@@ -2251,7 +2224,23 @@ public class GameConditions {
 		 }
 		 
 		 if(mapinfo instanceof GameFreeForAll) {
-			 
+				 if(!data.contains("Free-For-All.Limit-Point")) {
+					 if(player.isOp()) {
+						 player.sendMessage(ChatColor.RED+"El Mapa "+ChatColor.GOLD+map+ChatColor.RED+" no tiene seteado el Limite de Puntos");
+					 }
+					 else {
+						 player.sendMessage(ChatColor.RED+"Error en el Mapa: "+map);
+					 }
+					 return false;
+				 }else  if(!data.contains("Free-For-All.Spawns")) {
+					 if(player.isOp()) {
+						 player.sendMessage(ChatColor.RED+"El Mapa "+ChatColor.GOLD+map+ChatColor.RED+" no tiene seteado los Spawns");
+					 }
+					 else {
+						 player.sendMessage(ChatColor.RED+"Error en el Mapa: "+map);
+					 }
+					 return false;
+				 }
 			  
 			 
 		 		boss.addPlayer(player);
@@ -2266,8 +2255,7 @@ public class GameConditions {
 						 player.sendMessage(ChatColor.RED+"Error en el Mapa: "+map);
 					 }
 					 return false;
-				 }
-				if(misiontype == GameType.RESISTENCE && !data.contains("Spawn-End")) {
+				 }else if(misiontype == GameType.RESISTENCE && !data.contains("Spawn-End")) {
 					 if(player.isOp()) {
 						 player.sendMessage(ChatColor.RED+"El Mapa "+ChatColor.GOLD+map+ChatColor.RED+" no tiene seteado el Spawn-End");
 					 }
@@ -3229,15 +3217,13 @@ public class GameConditions {
 	
 	public void sendResultsOfGame(GameInfo map,String cronomet,String timer ) {
 		
-		if(map instanceof GameAdventure) {
+	
 			
-			GameAdventure ga = (GameAdventure) map;
+			List<String> participants = map.getParticipants();
+			List<String> spectator = map.getSpectators();
+			List<String> win = map.getWinnersPlayers();
 			
-			List<String> participants = ga.getParticipants(); 
-			List<String> alive = ga.getAlivePlayers();  
-			List<String> deads = ga.getDeadPlayers();
-			List<String> spectator = ga.getSpectators();
-			List<String> arrives = ga.getWinnersPlayers();
+		
 			
 			if(!hasMaintenance() || !isBlockedTheMap(map.getMapName())) {
 				saveMapFrequencysmg(map);
@@ -3250,9 +3236,9 @@ public class GameConditions {
 			sendMessageToConsole("");	
 			sendMessageToConsole(""+ChatColor.GRAY+ChatColor.BOLD+"RESULTADO DE LA PARTIDA");	
 			sendMessageToConsole(ChatColor.GRAY+"=============================");	
-			sendMessageToConsole(""+ChatColor.GRAY+"MAPA: "+ChatColor.WHITE+ga.getMapName());
+			sendMessageToConsole(""+ChatColor.GRAY+"MAPA: "+ChatColor.WHITE+map.getMapName());
 			sendMessageToConsole(""+ChatColor.GRAY+"FECHA: "+ChatColor.WHITE+ldt.format(formatter));
-			sendMessageToConsole(""+ChatColor.GRAY+"DEFAULT TIMER: "+ChatColor.GREEN+ga.getGameTime().getGameTimerDefaultForResult());
+			sendMessageToConsole(""+ChatColor.GRAY+"DEFAULT TIMER: "+ChatColor.GREEN+map.getGameTime().getGameTimerDefaultForResult());
 			sendMessageToConsole(""+ChatColor.GRAY+"DURACION: "+ChatColor.WHITE+cronomet);
 			sendMessageToConsole(""+ChatColor.GRAY+"TIMER: "+ChatColor.WHITE+timer);
 			sendMessageToConsole(""+ChatColor.GRAY+"TIPO DE PARADA: "+ChatColor.WHITE+map.getStopMotive().toString()+" - "+map.getStopMotive().getValue());
@@ -3267,31 +3253,8 @@ public class GameConditions {
 				}
 				comments = comments+ChatColor.GRAY+ChatColor.BOLD+" PARTICIPARON: "+ChatColor.GREEN+participants.size();
 				sendMessageToConsole(comments);
-			}
+			}			
 			
-			if(alive.isEmpty()) {
-				sendMessageToConsole(""+ChatColor.GREEN+ChatColor.BOLD+"VIVOS: "+ChatColor.WHITE+"SIN SUPERVIVIENTES");
-			}else {
-				String comments =  ""+ChatColor.GREEN+ChatColor.BOLD+"VIVOS: ";
-				for(int i = 0 ; i < alive.size();i++) {
-					comments = comments+ChatColor.GREEN+alive.get(i)+ChatColor.GOLD+",";
-				}
-				comments = comments+ChatColor.GREEN+ChatColor.BOLD+" SOBREVIVIERON: "+ChatColor.GOLD+alive.size();
-				sendMessageToConsole(comments);
-
-			}
-			
-			if(deads.isEmpty()) {
-				sendMessageToConsole(""+ChatColor.RED+ChatColor.BOLD+"MUERTOS: "+ChatColor.WHITE+"SIN MUERTOS");
-			}else {
-				String comments = ""+ChatColor.RED+ChatColor.BOLD+"MUERTOS: ";
-				for(int i = 0 ; i < deads.size();i++) {
-					comments = comments+ChatColor.YELLOW+deads.get(i)+ChatColor.GOLD+",";
-				}
-				comments = comments+ChatColor.RED+ChatColor.BOLD+" MURIERON: "+ChatColor.YELLOW+deads.size();
-				sendMessageToConsole(comments);
-
-			}
 			
 			if(spectator.isEmpty()) {
 				sendMessageToConsole(""+ChatColor.AQUA+ChatColor.BOLD+"ESPECTADORES: "+ChatColor.WHITE+"SIN ESPECTADORES");
@@ -3305,50 +3268,104 @@ public class GameConditions {
 
 			}
 			
-			if(arrives.isEmpty()) {
+			if(win.isEmpty()) {
 				sendMessageToConsole(""+ChatColor.GOLD+ChatColor.BOLD+"GANADORES: "+ChatColor.WHITE+"SIN GANADORES");
 			}else {
 				String comments = ""+ChatColor.GOLD+ChatColor.BOLD+"GANADORES: ";
-				for(int i = 0 ; i < arrives.size();i++) {
-					comments = comments+ChatColor.DARK_PURPLE+arrives.get(i)+ChatColor.DARK_GREEN+",";
+				for(int i = 0 ; i < win.size();i++) {
+					comments = comments+ChatColor.DARK_PURPLE+win.get(i)+ChatColor.DARK_GREEN+",";
 				}
-				comments = comments+ChatColor.GOLD+ChatColor.BOLD+" GANADORES: "+ChatColor.WHITE+arrives.size();
+				comments = comments+ChatColor.GOLD+ChatColor.BOLD+" GANADORES: "+ChatColor.WHITE+win.size();
 				sendMessageToConsole(comments);
 
 			}
+			
+			if(map instanceof GameAdventure) {
+				GameAdventure ga = (GameAdventure) map;
+				List<String> alive = ga.getAlivePlayers();  
+				List<String> deads = ga.getDeadPlayers();
+				if(alive.isEmpty()) {
+					sendMessageToConsole(""+ChatColor.GREEN+ChatColor.BOLD+"VIVOS: "+ChatColor.WHITE+"SIN SUPERVIVIENTES");
+				}else {
+					String comments =  ""+ChatColor.GREEN+ChatColor.BOLD+"VIVOS: ";
+					for(int i = 0 ; i < alive.size();i++) {
+						comments = comments+ChatColor.GREEN+alive.get(i)+ChatColor.GOLD+",";
+					}
+					comments = comments+ChatColor.GREEN+ChatColor.BOLD+" SOBREVIVIERON: "+ChatColor.GOLD+alive.size();
+					sendMessageToConsole(comments);
+
+				}
+				
+				if(deads.isEmpty()) {
+					sendMessageToConsole(""+ChatColor.RED+ChatColor.BOLD+"MUERTOS: "+ChatColor.WHITE+"SIN MUERTOS");
+				}else {
+					String comments = ""+ChatColor.RED+ChatColor.BOLD+"MUERTOS: ";
+					for(int i = 0 ; i < deads.size();i++) {
+						comments = comments+ChatColor.YELLOW+deads.get(i)+ChatColor.GOLD+",";
+					}
+					comments = comments+ChatColor.RED+ChatColor.BOLD+" MURIERON: "+ChatColor.YELLOW+deads.size();
+					sendMessageToConsole(comments);
+
+				}
+			}
+			if(map instanceof GameFreeForAll) {
+				GameFreeForAll ffa = (GameFreeForAll) map;
+				
+			 	HashMap<String, Integer> scores = new HashMap<>();
+				List<Player> joins = ConvertStringToPlayer(ffa.getParticipants());
+				
+				for(Player user : joins) {
+					PlayerInfo pl = plugin.getPlayerInfoPoo().get(user);
+					scores.put(user.getName(), pl.getGamePoints().getKills());	
+				}
+				
+				List<Map.Entry<String, Integer>> list = new ArrayList<>(scores.entrySet());
+				Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+					public int compare(Map.Entry<String, Integer> e1, Map.Entry<String, Integer> e2) {
+						return e2.getValue() - e1.getValue();
+					}
+				});
+				
+				if(!list.isEmpty()) {
+					sendMessageToConsole(ChatColor.GRAY+"TOP:");	
+					int i = 0;
+					for(Map.Entry<String, Integer> e : list) {
+						i++;
+						sendMessageToConsole(""+ChatColor.GREEN+i+")."+ChatColor.GOLD+e.getKey()+": "+ChatColor.GOLD+e.getValue());	
+						
+					}
+				}
+				
+			}
+
 			sendMessageToConsole(ChatColor.GRAY+"=============================");	
 			sendMessageToConsole("");	
 			
 			
-		}
 		
 	}
 	
 	public void sendResultsInGame(GameInfo map,Player player) {
 		
-		if(map instanceof GameAdventure) {
+		
+		List<String> participants = map.getParticipants();
+		List<String> spectator = map.getSpectators();
+		List<String> win = map.getWinnersPlayers();
+		
+
 			
-			GameAdventure ga = (GameAdventure) map;
-			
-			if(ga.getGameStatus() == GameStatus.TERMINANDO) {
+			if(map.getGameStatus() == GameStatus.TERMINANDO) {
 				sendMessageToUserAndConsole(player,ChatColor.RED+"La Partida esta Terminando.");	
 				return;
 			}
-			
-			List<String> participants = ga.getParticipants(); 
-			List<String> alive = ga.getAlivePlayers();  
-			List<String> deads = ga.getDeadPlayers();
-			List<String> spectator = ga.getSpectators();
-			List<String> arrives = ga.getWinnersPlayers();
-			
-			
 			sendMessageToUserAndConsole(player,"");	
 			sendMessageToUserAndConsole(player,""+ChatColor.RED+ChatColor.BOLD+"INFORME DEL PROGRESO DEL JUEGO");
 			sendMessageToUserAndConsole(player,ChatColor.GRAY+"=============================");
-			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"MAPA: "+ChatColor.WHITE+ga.getMapName());
-			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"DEFAULT TIMER: "+ChatColor.GREEN+ga.getGameTime().getGameTimerDefaultForResult());
-			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"DURACION: "+ChatColor.WHITE+ga.getGameTime().getGameCronometForResult());
-			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"TIMER: "+ChatColor.WHITE+ga.getGameTime().getGameTimerForResult());
+			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"MAPA: "+ChatColor.WHITE+map.getMapName());
+			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"DEFAULT TIMER: "+ChatColor.GREEN+map.getGameTime().getGameTimerDefaultForResult());
+			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"DURACION: "+ChatColor.WHITE+map.getGameTime().getGameCronometForResult());
+			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"TIMER: "+ChatColor.WHITE+map.getGameTime().getGameTimerForResult());
+			
 			if(participants.isEmpty()) {
 				sendMessageToUserAndConsole(player,""+ChatColor.GRAY+ChatColor.BOLD+"PARTICIPANTES: "+ChatColor.WHITE+"SIN PARTICIPANTES");
 			}else {
@@ -3358,35 +3375,6 @@ public class GameConditions {
 				}
 				comments = comments+ChatColor.GRAY+ChatColor.BOLD+" PARTICIPAN: "+ChatColor.GREEN+participants.size();
 				sendMessageToUserAndConsole(player,comments);
-			}
-			
-			if(alive.isEmpty()) {
-				sendMessageToUserAndConsole(player,""+ChatColor.GREEN+ChatColor.BOLD+"VIVOS: "+ChatColor.WHITE+"SIN SUPERVIVIENTES");
-			}else {
-				
-				NumberFormat nf = NumberFormat.getInstance();
-				nf.setGroupingUsed(false);
-				nf.setMaximumFractionDigits(0);
-				String comments =  ""+ChatColor.GREEN+ChatColor.BOLD+"VIVOS: ";
-				for(Player p : ConvertStringToPlayer(alive)) {
-					comments = comments+ChatColor.GREEN+p.getName()+ChatColor.WHITE+" Vida:"+ChatColor.RED+nf.format(p.getHealth())+ChatColor.GOLD+" ,";
-				}
-				
-				comments = comments+ChatColor.GREEN+ChatColor.BOLD+" SUPERVIVIENTES: "+ChatColor.GOLD+alive.size();
-				sendMessageToUserAndConsole(player,comments);
-
-			}
-			
-			if(deads.isEmpty()) {
-				sendMessageToUserAndConsole(player,""+ChatColor.RED+ChatColor.BOLD+"MUERTOS: "+ChatColor.WHITE+"SIN MUERTOS");
-			}else {
-				String comments = ""+ChatColor.RED+ChatColor.BOLD+"MUERTOS: ";
-				for(int i = 0 ; i < deads.size();i++) {
-					comments = comments+ChatColor.YELLOW+deads.get(i)+ChatColor.GOLD+",";
-				}
-				comments = comments+ChatColor.RED+ChatColor.BOLD+" MURIERON: "+ChatColor.YELLOW+deads.size();
-				sendMessageToUserAndConsole(player,comments);
-
 			}
 			
 			if(spectator.isEmpty()) {
@@ -3401,143 +3389,128 @@ public class GameConditions {
 
 			}
 			
-			if(arrives.isEmpty()) {
+			if(win.isEmpty()) {
 				sendMessageToUserAndConsole(player,""+ChatColor.GOLD+ChatColor.BOLD+"GANADORES: "+ChatColor.WHITE+"SIN GANADORES");
 			}else {
 				String comments = ""+ChatColor.GOLD+ChatColor.BOLD+"GANADORES: ";
-				for(int i = 0 ; i < arrives.size();i++) {
-					comments = comments+ChatColor.DARK_PURPLE+arrives.get(i)+ChatColor.DARK_GREEN+",";
+				for(int i = 0 ; i < win.size();i++) {
+					comments = comments+ChatColor.DARK_PURPLE+win.get(i)+ChatColor.DARK_GREEN+",";
 				}
-				comments = comments+ChatColor.GOLD+ChatColor.BOLD+" GANADORES: "+ChatColor.WHITE+arrives.size();
+				comments = comments+ChatColor.GOLD+ChatColor.BOLD+" GANADORES: "+ChatColor.WHITE+win.size();
 				sendMessageToUserAndConsole(player,comments);
 
 			}
 			
-			
-			sendMessageToUserAndConsole(player,""+ChatColor.RED+"OBJETIVOS ");
-			String comment = ga.getGameObjetivesMg().hasMapObjetives() ? "Si" : "No";
-			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"Tiene Objetivos: "+ChatColor.RED+comment);
-			if(ga.getGameObjetivesMg().hasMapObjetives()) {
+			if(map instanceof GameAdventure) {
+				GameAdventure ga = (GameAdventure) map;
 				
-				if(!ga.getGameObjetivesMg().getObjetivesPrimary().isEmpty()){
-					sendMessageToUserAndConsole(player,""+ChatColor.GOLD+"Objetivos Primarios ");
-					for(ObjetivesMG obj : ga.getGameObjetivesMg().getObjetivesPrimary()) {
-						sendMessageToUserAndConsole(player,ChatColor.RED+"- "+ChatColor.GOLD+obj.getObjetiveName()+" "+ChatColor.AQUA+obj.getObjetiveStatusType()+" "+ChatColor.GREEN+obj.getCurrentValue()+ChatColor.RED+"/"+ChatColor.GREEN+obj.getCompleteValue());
-					}
+				List<String> alive = ga.getAlivePlayers();  
+				List<String> deads = ga.getDeadPlayers();
+				if(alive.isEmpty()) {
+					sendMessageToUserAndConsole(player,""+ChatColor.GREEN+ChatColor.BOLD+"VIVOS: "+ChatColor.WHITE+"SIN SUPERVIVIENTES");
 				}else {
-					sendMessageToUserAndConsole(player,""+ChatColor.RED+"No Tiene Objetivos Primarios ");
+					
+					NumberFormat nf = NumberFormat.getInstance();
+					nf.setGroupingUsed(false);
+					nf.setMaximumFractionDigits(0);
+					String comments =  ""+ChatColor.GREEN+ChatColor.BOLD+"VIVOS: ";
+					for(Player p : ConvertStringToPlayer(alive)) {
+						comments = comments+ChatColor.GREEN+p.getName()+ChatColor.WHITE+" Vida:"+ChatColor.RED+nf.format(p.getHealth())+ChatColor.GOLD+" ,";
+					}
+					
+					comments = comments+ChatColor.GREEN+ChatColor.BOLD+" SUPERVIVIENTES: "+ChatColor.GOLD+alive.size();
+					sendMessageToUserAndConsole(player,comments);
+
 				}
 				
-				if(!ga.getGameObjetivesMg().getObjetivesSecondary().isEmpty()){
-					sendMessageToUserAndConsole(player,""+ChatColor.GOLD+"Objetivos Secundarios ");
-					for(ObjetivesMG obj : ga.getGameObjetivesMg().getObjetivesSecondary()) {
-						sendMessageToUserAndConsole(player,ChatColor.RED+"- "+ChatColor.GOLD+obj.getObjetiveName()+" "+ChatColor.AQUA+obj.getObjetiveStatusType()+" "+ChatColor.GREEN+obj.getCurrentValue()+ChatColor.RED+"/"+ChatColor.GREEN+obj.getCompleteValue());
-					}
+				if(deads.isEmpty()) {
+					sendMessageToUserAndConsole(player,""+ChatColor.RED+ChatColor.BOLD+"MUERTOS: "+ChatColor.WHITE+"SIN MUERTOS");
 				}else {
-					sendMessageToUserAndConsole(player,""+ChatColor.RED+"No Tiene Objetivos Secundarios ");
+					String comments = ""+ChatColor.RED+ChatColor.BOLD+"MUERTOS: ";
+					for(int i = 0 ; i < deads.size();i++) {
+						comments = comments+ChatColor.YELLOW+deads.get(i)+ChatColor.GOLD+",";
+					}
+					comments = comments+ChatColor.RED+ChatColor.BOLD+" MURIERON: "+ChatColor.YELLOW+deads.size();
+					sendMessageToUserAndConsole(player,comments);
+
 				}
 				
-				if(!ga.getGameObjetivesMg().getObjetivesHostile().isEmpty()){
-					sendMessageToUserAndConsole(player,""+ChatColor.GOLD+"Objetivos Hostiles ");
-					for(ObjetivesMG obj : ga.getGameObjetivesMg().getObjetivesHostile()) {
-						sendMessageToUserAndConsole(player,ChatColor.RED+"- "+ChatColor.GOLD+obj.getObjetiveName()+" "+ChatColor.AQUA+obj.getObjetiveStatusType()+" "+ChatColor.GREEN+obj.getCurrentValue()+ChatColor.RED+"/"+ChatColor.GREEN+obj.getCompleteValue());
+
+				
+				
+				sendMessageToUserAndConsole(player,""+ChatColor.RED+"OBJETIVOS ");
+				String comment = ga.getGameObjetivesMg().hasMapObjetives() ? "Si" : "No";
+				sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"Tiene Objetivos: "+ChatColor.RED+comment);
+				if(ga.getGameObjetivesMg().hasMapObjetives()) {
+					
+					if(!ga.getGameObjetivesMg().getObjetivesPrimary().isEmpty()){
+						sendMessageToUserAndConsole(player,""+ChatColor.GOLD+"Objetivos Primarios ");
+						for(ObjetivesMG obj : ga.getGameObjetivesMg().getObjetivesPrimary()) {
+							sendMessageToUserAndConsole(player,ChatColor.RED+"- "+ChatColor.GOLD+obj.getObjetiveName()+" "+ChatColor.AQUA+obj.getObjetiveStatusType()+" "+ChatColor.GREEN+obj.getCurrentValue()+ChatColor.RED+"/"+ChatColor.GREEN+obj.getCompleteValue());
+						}
+					}else {
+						sendMessageToUserAndConsole(player,""+ChatColor.RED+"No Tiene Objetivos Primarios ");
 					}
-				}else {
-					sendMessageToUserAndConsole(player,""+ChatColor.RED+"No Tiene Objetivos Hostiles ");
+					
+					if(!ga.getGameObjetivesMg().getObjetivesSecondary().isEmpty()){
+						sendMessageToUserAndConsole(player,""+ChatColor.GOLD+"Objetivos Secundarios ");
+						for(ObjetivesMG obj : ga.getGameObjetivesMg().getObjetivesSecondary()) {
+							sendMessageToUserAndConsole(player,ChatColor.RED+"- "+ChatColor.GOLD+obj.getObjetiveName()+" "+ChatColor.AQUA+obj.getObjetiveStatusType()+" "+ChatColor.GREEN+obj.getCurrentValue()+ChatColor.RED+"/"+ChatColor.GREEN+obj.getCompleteValue());
+						}
+					}else {
+						sendMessageToUserAndConsole(player,""+ChatColor.RED+"No Tiene Objetivos Secundarios ");
+					}
+					
+					if(!ga.getGameObjetivesMg().getObjetivesHostile().isEmpty()){
+						sendMessageToUserAndConsole(player,""+ChatColor.GOLD+"Objetivos Hostiles ");
+						for(ObjetivesMG obj : ga.getGameObjetivesMg().getObjetivesHostile()) {
+							sendMessageToUserAndConsole(player,ChatColor.RED+"- "+ChatColor.GOLD+obj.getObjetiveName()+" "+ChatColor.AQUA+obj.getObjetiveStatusType()+" "+ChatColor.GREEN+obj.getCurrentValue()+ChatColor.RED+"/"+ChatColor.GREEN+obj.getCompleteValue());
+						}
+					}else {
+						sendMessageToUserAndConsole(player,""+ChatColor.RED+"No Tiene Objetivos Hostiles ");
+					}
+				}
+				
+				sendMessageToUserAndConsole(player,ChatColor.GRAY+"PUNTOS DE LOS PARTICIPANTES");	
+				for(Player part : ConvertStringToPlayer(participants)) {
+					PlayerInfo pi = plugin.getPlayerInfoPoo().get(part);
+					sendMessageToUserAndConsole(player,""+ChatColor.GOLD+"- "+part.getName()+ChatColor.RED+" K:"+ChatColor.GREEN+pi.getGamePoints().getKills()+ChatColor.RED+" D:"+ChatColor.GREEN+pi.getGamePoints().getDeads()+ChatColor.RED+" R:"+ChatColor.GREEN+pi.getGamePoints().getRevive()+ChatColor.RED+" HR:"+ChatColor.GREEN+pi.getGamePoints().getHelpRevive());
+				}
+				
+			}else if(map instanceof GameFreeForAll) {
+				GameFreeForAll ffa = (GameFreeForAll) map;
+				
+			 	HashMap<String, Integer> scores = new HashMap<>();
+				List<Player> joins = ConvertStringToPlayer(ffa.getParticipants());
+				
+				for(Player user : joins) {
+					PlayerInfo pl = plugin.getPlayerInfoPoo().get(user);
+					scores.put(user.getName(), pl.getGamePoints().getKills());	
+				}
+				
+				List<Map.Entry<String, Integer>> list = new ArrayList<>(scores.entrySet());
+				Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+					public int compare(Map.Entry<String, Integer> e1, Map.Entry<String, Integer> e2) {
+						return e2.getValue() - e1.getValue();
+					}
+				});
+				
+				if(!list.isEmpty()) {
+					sendMessageToConsole(ChatColor.GRAY+"TOP:");	
+					int i = 0;
+					for(Map.Entry<String, Integer> e : list) {
+						i++;
+						sendMessageToConsole(""+ChatColor.GREEN+i+")."+ChatColor.GOLD+e.getKey()+": "+ChatColor.GOLD+e.getValue());	
+						
+					}
 				}
 			}
 			
-			sendMessageToUserAndConsole(player,ChatColor.GRAY+"PUNTOS DE LOS PARTICIPANTES");	
-			for(Player part : ConvertStringToPlayer(participants)) {
-				PlayerInfo pi = plugin.getPlayerInfoPoo().get(part);
-				sendMessageToUserAndConsole(player,""+ChatColor.GOLD+"- "+part.getName()+ChatColor.RED+" K:"+ChatColor.GREEN+pi.getGamePoints().getKills()+ChatColor.RED+" D:"+ChatColor.GREEN+pi.getGamePoints().getDeads()+ChatColor.RED+" R:"+ChatColor.GREEN+pi.getGamePoints().getRevive()+ChatColor.RED+" HR:"+ChatColor.GREEN+pi.getGamePoints().getHelpRevive());
-			}
-			
+	
 			sendMessageToUserAndConsole(player,ChatColor.GRAY+"=============================");	
 			sendMessageToUserAndConsole(player,"");	
 			
-			
-		}else if(map instanceof GameFreeForAll) {
-			
-			GameFreeForAll ffa = (GameFreeForAll) map;
-			
-			if(ffa.getGameStatus() == GameStatus.TERMINANDO) {
-				sendMessageToUserAndConsole(player,ChatColor.RED+"La Partida esta Terminando.");	
-				return;
-			}
-			
-			List<String> participants = ffa.getParticipants(); 
-			List<String> spectator = ffa.getSpectators();
-			
-			
-			
-			sendMessageToUserAndConsole(player,"");	
-			sendMessageToUserAndConsole(player,""+ChatColor.RED+ChatColor.BOLD+"INFORME DEL PROGRESO DEL JUEGO");
-			sendMessageToUserAndConsole(player,ChatColor.GRAY+"=============================");
-			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"MAPA: "+ChatColor.WHITE+ffa.getMapName());
-			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"DEFAULT TIMER: "+ChatColor.GREEN+ffa.getGameTime().getGameTimerDefaultForResult());
-			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"DURACION: "+ChatColor.WHITE+ffa.getGameTime().getGameCronometForResult());
-			sendMessageToUserAndConsole(player,""+ChatColor.GRAY+"TIMER: "+ChatColor.WHITE+ffa.getGameTime().getGameTimerForResult());
-			
-			
-			if(participants.isEmpty()) {
-				sendMessageToUserAndConsole(player,""+ChatColor.GRAY+ChatColor.BOLD+"PARTICIPANTES: "+ChatColor.WHITE+"SIN PARTICIPANTES");
-			}else {
-				String comments =  ""+ChatColor.GREEN+ChatColor.BOLD+"PARTICIPANTES: ";
-				for(int i = 0 ; i < participants.size();i++) {
-					comments = comments+ChatColor.GREEN+participants.get(i)+ChatColor.GOLD+",";
-				}
-				comments = comments+ChatColor.GRAY+ChatColor.BOLD+" PARTICIPAN: "+ChatColor.GREEN+participants.size();
-				sendMessageToUserAndConsole(player,comments);
-			}
-			
-			if(spectator.isEmpty()) {
-				sendMessageToUserAndConsole(player,""+ChatColor.AQUA+ChatColor.BOLD+"ESPECTADORES: "+ChatColor.WHITE+"SIN ESPECTADORES");
-			}else {
-				String comments = ""+ChatColor.AQUA+ChatColor.BOLD+"ESPECTADORES: ";
-				for(int i = 0 ; i < spectator.size();i++) {
-					comments = comments+ChatColor.WHITE+spectator.get(i)+ChatColor.GOLD+",";
-				}
-				comments = comments+ChatColor.AQUA+ChatColor.BOLD+" ESPECTADORES: "+ChatColor.WHITE+spectator.size();
-				sendMessageToUserAndConsole(player,comments);
 
-			}
-			
-		 	HashMap<String, Integer> scores = new HashMap<>();
-			
-			
-			List<Player> joins = ConvertStringToPlayer(ffa.getParticipants());
-			
-			for(Player user : joins) {
-				PlayerInfo pl = plugin.getPlayerInfoPoo().get(user);
-				scores.put(user.getName(), pl.getGamePoints().getKills());	
-			}
-			
-			List<Map.Entry<String, Integer>> list = new ArrayList<>(scores.entrySet());
-
-			
-			Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-				public int compare(Map.Entry<String, Integer> e1, Map.Entry<String, Integer> e2) {
-					return e2.getValue() - e1.getValue();
-				}
-			});
-			
-			if(!list.isEmpty()) {
-				sendMessageToUserAndConsole(player,ChatColor.GRAY+"TOP:");	
-				int i = 0;
-				for(Map.Entry<String, Integer> e : list) {
-					i++;
-					sendMessageToUserAndConsole(player,""+ChatColor.GREEN+i+")."+ChatColor.GOLD+e.getKey()+": "+ChatColor.GOLD+e.getValue());	
-					
-					
-				}
-			}
-			
-			
-			sendMessageToUserAndConsole(player,ChatColor.GRAY+"=============================");	
-			sendMessageToUserAndConsole(player,"");	
-			
-		}
 		
 	}
 	
@@ -3547,7 +3520,7 @@ public class GameConditions {
 		PlayerInfo pl = plugin.getPlayerInfoPoo().get(player);
 		GameInfo ms = plugin.getGameInfoPoo().get(pl.getMapName());
 		MgTeams mt = new MgTeams(plugin);
-		 if(ms instanceof GameAdventure) {
+	
 				//GameAdventure ga = (GameAdventure) ms;
 				setDefaultHeartsInGame(player);
 				BossBar boss = ms.getBossbar();
@@ -3559,7 +3532,7 @@ public class GameConditions {
 					if(ms.isAllowedJoinWithOwnInventory()) {
 						player.teleport(pl.getLocationMG());
 						pl.restoreGamemodePlayerMg();
-						
+						 
 						if(ms.getGameStatus() == GameStatus.TERMINANDO) {
 							playerWinnerReward(player);
 							playerLoserReward(player);
@@ -3582,19 +3555,7 @@ public class GameConditions {
 				
 			player.getWorld().spawnParticle(Particle.PORTAL, player.getLocation().add(0, 1, 0),// POR ALGUN RAZON DICE QUE ESE METODO DA ERROR POR PASARLE UN PARAMETRO MAL PIDE
 							/* NUMERO DE PARTICULAS */150, 2, 5, 2, /* velocidad */0, null, true); // UN FLOAT PERO NO HAY
-		 }
-//		 }else if(ms instanceof GameNexo) {
-//			// GameNexo gn = (GameNexo) ms;
-//			    setDefaultHeartsInGame(player);
-//				BossBar boss = ms.getBossbar();
-//				boss.removePlayer(player);
-//				
-//					player.teleport(pl.getLocationMG());
-//					pl.restoreAllPlayerMg();
-//				
-//				removeAllPlayerToGame(player, pl.getMapName());
-//				
-//		 }
+
 	}
 	
 	public void setKitMg(Player player) {
@@ -3900,67 +3861,90 @@ public class GameConditions {
 		    
 		   GameConditions gc = new GameConditions(plugin);
 			if(gc.existMap(name)) {
-				GameInfo ms = plugin.getGameInfoPoo().get(name);
-				if(ms instanceof GameAdventure) {
-					GameAdventure ga = (GameAdventure) ms;
-					GameStatus estadoPartida = ms.getGameStatus();
+				GameInfo gi = plugin.getGameInfoPoo().get(name);
+				
+					GameStatus estadoPartida = gi.getGameStatus();
 					if(estadoPartida == GameStatus.JUGANDO || estadoPartida == GameStatus.FREEZE || estadoPartida == GameStatus.PAUSE) {
 						GameIntoMap ci = new GameIntoMap(plugin);
 						
 						
-						ms.setStopMotive(motive);
+						gi.setStopMotive(motive);
 						if(reason.isEmpty() || reason.equals("Ninguno")){
-							ms.setStopReason(motive.getValue());
+							gi.setStopReason(motive.getValue());
 						}else {
-							ms.setStopReason(reason);
+							gi.setStopReason(reason);
 						}
 						
 						
-						List<Player> participants = gc.ConvertStringToPlayer(ga.getParticipants());
-						List<Player> alives = gc.ConvertStringToPlayer(ga.getAlivePlayers());
-						List<Player> spectator = gc.ConvertStringToPlayer(ga.getSpectators());
+						List<Player> participants = gc.ConvertStringToPlayer(gi.getParticipants());
+						
+						List<Player> spectator = gc.ConvertStringToPlayer(gi.getSpectators());
 						//Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"Motivo de Parada: "+ChatColor.WHITE+motive.getValue());
 						//Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+ms.getGameType().toString()+ChatColor.GREEN+ms.getStopReason());
 						
-						for(Player target : participants) {
+						if(gi instanceof GameAdventure) {
+							GameAdventure ga = (GameAdventure) gi;
 							
-							if(motive == StopMotive.WIN) {
-								target.sendMessage(ChatColor.GREEN+ms.getStopReason());
-								
-								if(alives.contains(target)) {
-									ci.GamePlayerWin(target);
-								}
-								
-							}else if(motive == StopMotive.LOSE) {
-								target.sendMessage(ChatColor.RED+ms.getStopReason());
-								if(alives.contains(target)) {
+							List<Player> alives = gc.ConvertStringToPlayer(ga.getAlivePlayers());
+							for(Player target : participants) {
+								if(motive == StopMotive.WIN) {
+									target.sendMessage(ChatColor.GREEN+gi.getStopReason());
+									
+									if(alives.contains(target)) {
+										ci.GamePlayerWin(target);
+									}
+									
+								}else if(motive == StopMotive.LOSE) {
+									target.sendMessage(ChatColor.RED+gi.getStopReason());
+									if(alives.contains(target)) {
+										ci.GamePlayerLost(target);
+									}
+									
+								}else if(motive == StopMotive.ERROR) {
+									target.sendMessage(ChatColor.RED+gi.getStopReason());
+									ci.GamePlayerLost(target);
+								}else if(motive == StopMotive.FORCE) {
+									target.sendMessage(ChatColor.RED+gi.getStopReason());
 									ci.GamePlayerLost(target);
 								}
-								
-							}else if(motive == StopMotive.ERROR) {
-								target.sendMessage(ChatColor.RED+ms.getStopReason());
-								ci.GamePlayerLost(target);
-							}else if(motive == StopMotive.FORCE) {
-								target.sendMessage(ChatColor.RED+ms.getStopReason());
-								ci.GamePlayerLost(target);
 							}
-							
+		
+						}else if(gi instanceof GameFreeForAll) {
+							GameFreeForAll ffa = (GameFreeForAll) gi;
+							for(Player target : participants) {
+								if(motive == StopMotive.WIN) {
+									target.sendMessage(ChatColor.GREEN+gi.getStopReason());
+									
+								}else if(motive == StopMotive.LOSE) {
+									target.sendMessage(ChatColor.RED+gi.getStopReason());
+									
+								}else if(motive == StopMotive.ERROR) {
+									target.sendMessage(ChatColor.RED+gi.getStopReason());
+									
+								}else if(motive == StopMotive.FORCE) {
+									target.sendMessage(ChatColor.RED+gi.getStopReason());
+									
+								}
+							}
+							ffa.endGamesByTimeOut();
+									
 							
 						}
+						
 						
 						if(!spectator.isEmpty()) {
 							for(Player target : spectator) {
 								if(motive == StopMotive.WIN) {
-									target.sendMessage(ChatColor.GREEN+ms.getStopReason());
+									target.sendMessage(ChatColor.GREEN+gi.getStopReason());
 									
 								}else if(motive == StopMotive.LOSE) {
-									target.sendMessage(ChatColor.RED+ms.getStopReason());
+									target.sendMessage(ChatColor.RED+gi.getStopReason());
 									
 								}else if(motive == StopMotive.ERROR) {
-									target.sendMessage(ChatColor.RED+ms.getStopReason());
+									target.sendMessage(ChatColor.RED+gi.getStopReason());
 									
 								}else if(motive == StopMotive.FORCE) {
-									target.sendMessage(ChatColor.RED+ms.getStopReason());
+									target.sendMessage(ChatColor.RED+gi.getStopReason());
 									
 								}
 							}
@@ -3976,14 +3960,14 @@ public class GameConditions {
 						Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"El Mapa "+ChatColor.GREEN+name+ChatColor.RED+" no esta en estado Jugando.");
 		    		}
 					
-				}else {
-					if(player != null) {
-						player.sendMessage(ChatColor.YELLOW+"El Mapa "+ChatColor.GREEN+name+ChatColor.YELLOW+" no existe");
-					}
-					Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"El Mapa "+ChatColor.GREEN+name+ChatColor.YELLOW+" no existe");
 
-				}
 				
+			}else {
+				if(player != null) {
+					player.sendMessage(ChatColor.YELLOW+"El Mapa "+ChatColor.GREEN+name+ChatColor.YELLOW+" no existe");
+				}
+				Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"El Mapa "+ChatColor.GREEN+name+ChatColor.YELLOW+" no existe");
+
 			}
 				
 				
@@ -4004,7 +3988,28 @@ public class GameConditions {
 		return new GameTime(plugin,map,hora,minuto,segundo);
    }
    
-
+   
+   public List<Location> loadMapSpawnsFfa(String map) {
+	    FileConfiguration game = getGameConfig(map);
+	    List<Location> l = new ArrayList<>();
+	    
+	    if(game.contains("Free-For-All.Spawns")) {
+	    	 List<String> spawns = game.getStringList("Free-For-All.Spawns");
+	    	for(String s : spawns) {
+	    		l.add(convertEspecificStringLocationToEspecificLocation(s));
+	    	}
+	    }
+	    
+	    
+	
+		return l;
+  }
+ 
+   public int loadLimitPointFfa(String map) {
+	   FileConfiguration game = getGameConfig(map);
+	   return game.getInt("Free-For-All.Limit-Point",35);
+   }
+   
    
    public  Map<String,GameTime> loadDataExecutableTimer(String map) {
 	    FileConfiguration game = getGameConfig(map);
@@ -4092,7 +4097,7 @@ public class GameConditions {
 			List<String> generators = game.getStringList("Generators.List");
 			if(!generators.isEmpty()) {
 				for(String loc : generators) {
-					l.add(convertStringLocationToLocations(loc));
+					l.add(convertStringLocationToLocation(loc));
 				}
 			}
     	}
@@ -4108,7 +4113,7 @@ public class GameConditions {
 			List<String> generators = game.getStringList("Mobs-Generators.List");
 			if(!generators.isEmpty()) {
 				for(String loc : generators) {
-					l.add(convertStringLocationToLocations(loc));
+					l.add(convertStringLocationToLocation(loc));
 				}
 			}
     	}
@@ -4157,7 +4162,7 @@ public class GameConditions {
 					String coord2 = split[1];
 					String status = split[2];
 					
-					zones.add(new CuboidZone(convertStringLocationToLocations(coord1),convertStringLocationToLocations(coord2),convertStringToGameInteractions(status)));
+					zones.add(new CuboidZone(convertStringLocationToLocation(coord1),convertStringLocationToLocation(coord2),convertStringToGameInteractions(status)));
 				}
 			}
 		}
@@ -5072,18 +5077,36 @@ public class GameConditions {
 		return gi;
 	} 
 	
-	public Location convertStringLocationToLocations(String location) {
+	public Location convertStringLocationToLocation(String location) {
 		String[] split = location.split("/");
 		String m = split[0];
 		World world = Bukkit.getWorld(m);
 		if(world == null) {
 			world = Bukkit.getServer().getWorlds().get(0);
-			sendMessageToConsole("El Mundo "+m+" no existe , se procede a colocar el Primer mundo del servidor como reemplazo junto con las coordenadas Otorgadas.");
+			sendMessageToConsole("El Mundo "+m+" no existe , se procede a colocar el Primer mundo del Servidor como reemplazo junto con las coordenadas Otorgadas.");
 		}
 		double x = Double.valueOf(split[1]);
 		double y = Double.valueOf(split[2]);
 		double z = Double.valueOf(split[3]);
 		return new Location(world,x,y,z);
+	}
+	
+	
+	public Location convertEspecificStringLocationToEspecificLocation(String location) {
+		String[] split = location.split("/");
+		String m = split[0];
+		World world = Bukkit.getWorld(m);
+		if(world == null) {
+			world = Bukkit.getServer().getWorlds().get(0);
+			sendMessageToConsole("El Mundo "+m+" no existe , se procede a colocar el Primer mundo del Servidor como reemplazo junto con las coordenadas Otorgadas.");
+		}
+		double x = Double.valueOf(split[1]);
+		double y = Double.valueOf(split[2]);
+		double z = Double.valueOf(split[3]);
+		float yaw = Float.valueOf(split[4]);
+		float pitch = Float.valueOf(split[5]);
+		
+		return new Location(world,x,y,z,yaw,pitch);
 	}
 
 	
@@ -5875,6 +5898,7 @@ public class GameConditions {
 				}
 				YamlFilePlus y = new YamlFilePlus(plugin);
 				y.deleteSpecificConsole(name);
+				switchsendMessageForUserAndConsole(player," &cSe a Borrado el Mapa &6"+name);
 			}
 		}
 	}
@@ -5883,7 +5907,17 @@ public class GameConditions {
 	public void showStatsMap(Player player , String map) {
 		
 		if(!existMap(map)) {
-			sendMessageToUserAndConsole(player,ChatColor.RED+"El Mapa "+ChatColor.GREEN+map+ChatColor.RED+" no existe. ");
+			switchsendMessageForUserAndConsole(player,Utils.colorTextChatColor("&cEl Mapa &a"+map+" &cno existe."));
+			return;
+		}
+		FileConfiguration ym = getGameConfig(map);
+		
+		String enumtype = ym.getString("Type-Map").toUpperCase();
+		GameType type = GameType.matchMode(enumtype);
+		
+		if(type != GameType.ADVENTURE || type != GameType.RESISTENCE) {
+			switchsendMessageForUserAndConsole(player,Utils.colorTextChatColor("&c&lSin Datos: &6Solo de los Mapas en Modo &a&lAventura &6y &b&lResistencia &6se Puede obtener Datos."));
+
 			return;
 		}
 		
@@ -5898,8 +5932,7 @@ public class GameConditions {
 		String ci = canJoinWithYourInventory(map) ? "Si" : "No";
 		String locked = isBlockedTheMap(map) ? "Deshabilitado" : "Habilitado";
 		
-		String enumtype = getGameConfig(map).getString("Type-Map").toUpperCase();
-		GameType type = GameType.valueOf(enumtype);
+
 		int pointsperkill = getPointsPerKills(map);
 		int pointsperrevive = getPointsPerRevive(map);
 		int pointsperhelprevive = getPointsPerHelpRevive(map);

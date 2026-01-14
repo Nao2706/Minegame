@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.EnchantingTable;
@@ -76,6 +77,7 @@ import me.nao.main.mg.Minegame;
 import me.nao.manager.mg.GameIntoMap;
 import me.nao.mobs.mg.MobsActions;
 import me.nao.revive.mg.RevivePlayer;
+import me.nao.utils.mg.Utils;
 
 
 @SuppressWarnings("deprecation")
@@ -724,7 +726,15 @@ public class SourceOfDamage implements Listener{
 																		  float pitch = Float.valueOf(nn[4]);
 																		  float yaw = Float.valueOf(nn[5]);
 																		  
-																		  Location l = new Location(Bukkit.getWorld(world),x,y,z,pitch,yaw);
+																		  World w = Bukkit.getWorld(world);
+																		  
+																		  if(w == null) {
+																			  player.sendTitle(Utils.colorTextChatColor("&cError en TP"), "&eEl Mundo no existe", 20, 20, 20);
+																			  return;
+																		  }
+																		  
+																		  
+																		  Location l = new Location(w,x,y,z,pitch,yaw);
 																		  player.teleport(l);	
 																		  player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 20.0F, 1F);
 										              }
@@ -1294,11 +1304,10 @@ public class SourceOfDamage implements Listener{
 								}
 								return;
 					}
-			}
-			
-			if(e.getCause() == DamageCause.FALL && player.getScoreboardTags().contains("Instadeadbyfall")) {
+			}else if(e.getCause() == DamageCause.FALL && player.getScoreboardTags().contains("Instadeadbyfall")) {
 				if(player.getInventory().getItemInMainHand().isSimilar(new ItemStack(Material.TOTEM_OF_UNDYING)) || player.getInventory().getItemInOffHand().isSimilar(new ItemStack(Material.TOTEM_OF_UNDYING)))return;
 				e.setCancelled(true);
+				
 				if(gc.isEnabledReviveSystem(pi.getMapName())) {
 					ArmorStand armor = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
 					RevivePlayer pr = new RevivePlayer(player,0,60,ReviveStatus.BLEEDING,null,e.getCause(),armor ,plugin);
@@ -1308,13 +1317,12 @@ public class SourceOfDamage implements Listener{
 				}else {
 					ci.GameDamageCauses(player, e.getCause());
 				}
-			}
-			
-			// CUANDO CAE ENCIMA DEL BARRIER RECIBE DAÑO PERO ESTE NO MUERE PERO SE PUEDE MOVER UNOS SEGS
-			if(player.getHealth() > e.getFinalDamage() && e.getCause() == DamageCause.FALL) {
+				
+				// CUANDO CAE ENCIMA DEL BARRIER RECIBE DAÑO PERO ESTE NO MUERE PERO SE PUEDE MOVER UNOS SEGS
+			}else if(player.getHealth() > e.getFinalDamage() && e.getCause() == DamageCause.FALL) {
 				ci.GamePlayerFallMap(player,DamageCause.FALL);
 				
-			}if(e.getCause() == DamageCause.VOID) {
+			}else if(e.getCause() == DamageCause.VOID) {
 				e.setCancelled(true);
 				ci.GamePlayerFallMap(player,DamageCause.VOID);
 			}else if(e.getFinalDamage() >= player.getHealth()) {

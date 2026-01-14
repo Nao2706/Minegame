@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import me.nao.cosmetics.mg.Fireworks;
 import me.nao.enums.mg.GameStatus;
 import me.nao.enums.mg.StopMotive;
 import me.nao.enums.mg.TimerStatus;
@@ -33,7 +34,6 @@ import me.nao.generalinfo.mg.GameTime;
 import me.nao.main.mg.Minegame;
 import me.nao.mobs.mg.MobsActions;
 import me.nao.scoreboard.mg.MgScore;
-import me.nao.utils.mg.Utils;
 
 
 @SuppressWarnings("deprecation")
@@ -52,7 +52,7 @@ public class FreeForAllTemp {
 	 }
 	
 	
-	public void Inicio(String name) {
+	public void startMg(String name) {
 		
 		
 		GameConditions gc = new GameConditions(plugin);
@@ -64,7 +64,7 @@ public class FreeForAllTemp {
 			
 			
 			GameInfo ms = plugin.getGameInfoPoo().get(name);
-			GameFreeForAll ffa = new GameFreeForAll(plugin);
+			GameFreeForAll ffa = (GameFreeForAll) ms;
 		    MgScore sco = new MgScore(plugin);
 		    
 			//int startm = config.getInt("CountDownPreLobby");
@@ -98,7 +98,7 @@ public class FreeForAllTemp {
 //		 	double time = 1.0 / total;
 		 	
 		    BossBar boss = ms.getBossbar();
-		    
+		    Fireworks fw = new Fireworks();
 		
 		@Override
 		public void run() {
@@ -154,7 +154,8 @@ public class FreeForAllTemp {
 				    		  if(part == GameStatus.COMENZANDO) {
 				    		   
 				    			ms.setGameStatus(GameStatus.JUGANDO);
-							    gc.TptoSpawnMap(players, name);
+				    			ffa.startGame(players);
+							    //gc.TptoSpawnMap(players, name);
 				    			
 				    		  }
 						  
@@ -169,17 +170,11 @@ public class FreeForAllTemp {
 					//EL ORDEN DEL TERMINADO SIEMPRE DEBE IR AL FINAL SINO PUEDE DAR NULLPOINTER POR Q TRATAS DE ACCEDER A COSAS VIEJAS
 					if(gt.getTimersecond() <= 0 && gt.getTimerminute() <= 0 && gt.getTimerhour() <= 0) {
 						
-						for(String target : joins) {
-							 Player players = Bukkit.getPlayerExact(target);
-							 
-							 players.sendTitle(Utils.colorTextChatColor("&a&l"+ffa.winnerPlayer()),Utils.colorTextChatColor("&eGana por ser el Top &c#&61"), 20, 20, 20);
-
-						}
-						
+						 ffa.endGamesByTimeOut();
 						 boss.setProgress(1.0);
 				  		 boss.setTitle(""+ChatColor.WHITE+ChatColor.BOLD+"FIN...");
 						
-						 ms.setGameStatus(GameStatus.TERMINANDO);
+						
 				  		 //STOP
 					}else if(motivo == StopMotive.WIN || motivo == StopMotive.LOSE || motivo == StopMotive.ERROR || motivo == StopMotive.FORCE) {
 						
@@ -188,18 +183,14 @@ public class FreeForAllTemp {
 				  		 boss.setTitle(""+ChatColor.WHITE+ChatColor.BOLD+"FIN..");
 						 ms.setGameStatus(GameStatus.TERMINANDO);
 						 //ALL DEADS
-					}else if(ffa.hasPlayerReachedPointLimit()) {
-						
-						for(String target : joins) {
-							 Player players = Bukkit.getPlayerExact(target);
-							
-							 players.sendTitle(Utils.colorTextChatColor("&a&l"+ffa.winnerPlayer()+" &b&lGANO"),Utils.colorTextChatColor("&epor Alcanzar el Limite de Puntos."), 20, 20, 20);
-
-						}
+					}else if(ffa.hasAnyPlayerReachedPointLimit()) {
+					
+	
+						 
 						 boss.setProgress(1.0);
 				  		 boss.setTitle(""+ChatColor.WHITE+ChatColor.BOLD+"FIN...");
 						
-						 ms.setGameStatus(GameStatus.TERMINANDO);
+					
 					}
 					
 					for(String target : joins) {
@@ -249,6 +240,13 @@ public class FreeForAllTemp {
 			}
 			//TODO TERMINANDO
 			else if(part == GameStatus.TERMINANDO) {
+						Player win = gc.ConvertStringToPlayerAlone(ffa.getWinnerTopPlayer());
+						
+						if(win != null) {
+							fw.spawnMetodoAyi(win);	
+						}
+					
+						
 						
 						if(end == 10) {
 							 boss.setProgress(1.0);
