@@ -14,5 +14,5 @@ Minijuegos
 - Infectado
 - Captura la Lana
 - Destruye el Nexo (quiza)
-- Todos contra Todos
+- Todos contra Todos (Completed) Renombrado a PointHunt
 - Duelo con Elytras
