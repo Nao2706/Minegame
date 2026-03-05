@@ -17,3 +17,7 @@ Minijuegos
 - Todos contra Todos (Completed) Renombrado a PointHunt
 - Duelo con Elytras
 - Añadir Carteles para unirse.
+
+
+Muerte de Laptop HP
+04/02/2026 
