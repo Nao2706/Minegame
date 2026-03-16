@@ -19,5 +19,8 @@ Minijuegos
 - Añadir Carteles para unirse.
 
 
-Muerte de Laptop HP
+Muerte de Laptop HP (Viviras en mi Memoria)
 04/02/2026 
+
+
+Nueva Laptop HP 15/03/2026 
