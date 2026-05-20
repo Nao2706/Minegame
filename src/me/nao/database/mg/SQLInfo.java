@@ -55,14 +55,13 @@ public class SQLInfo {
 	}
 	
 	
-	public static boolean isConnected(Connection connection) {
-	    try {
-	        return connection != null && !connection.isClosed();
-	    } catch (SQLException e) {
-	        return false;
-	    }
-	}
-	
+    public static boolean isConnected(Connection connection) {
+        try {
+            return connection != null && !connection.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 	
 	//set info ejemplos
 	public static void createtable(Connection connection) {

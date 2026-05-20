@@ -120,6 +120,8 @@ public class Comandsmg implements CommandExecutor{
 		FileConfiguration message = plugin.getMessage();
 		FileConfiguration points1 = plugin.getPoints();		
 	
+	
+		
 		//mensaje desde consola
 		// con el if se evita que se use el comando desde consola
 		

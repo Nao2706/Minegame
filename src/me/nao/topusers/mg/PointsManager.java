@@ -967,6 +967,7 @@ public class PointsManager {
 	
 	
 	public String Porcentage(long current , long max ) {
+		if(current == 0) return "0%";
 		double percent = current < 0 ? 0 : (double) current/max*100;
 		NumberFormat nf = NumberFormat.getInstance();
 		nf.setMaximumFractionDigits(0);
