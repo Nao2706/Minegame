@@ -7,6 +7,8 @@ Proximamente Generadores con Mejoras
 Mejorar la tienda
 Dar algun boost
 Mejorar en lo posible el Armor Stand del revive
+- Reducir tiempo de resurreccion
+Sistema de Rotacion de mapa (Considerar)
 
 Minijuegos
 - Duelo de Palas
