@@ -3273,12 +3273,10 @@ public class GameConditions {
 	public void sendResultsOfGame(GameInfo map,String cronomet,String timer ) {
 		
 	
-			
 			List<String> participants = map.getParticipants();
 			List<String> spectator = map.getSpectators();
 			List<String> win = map.getWinnersPlayers();
 			
-		
 			
 			if(!hasMaintenance() || !isBlockedTheMap(map.getMapName())) {
 				saveMapFrequencysmg(map);
@@ -3862,8 +3860,7 @@ public class GameConditions {
 														 .replace("%deads%", Integer.toString(pl.getGamePoints().getDeads()))
 														 .replace("%damage%", Long.toString(pl.getGamePoints().getDamage()))
 														 
-														
-														
+													
 														
 														);
 														 //.replace("%cronomet%", time);
@@ -6225,10 +6222,8 @@ public class GameConditions {
 	
 	
 	public void deleteSign(Player player,Block b) {
-			FileConfiguration config = plugin.getConfig();
+				FileConfiguration config = plugin.getConfig();
 
-
-			 
 				List<String> coords = config.getStringList("Sign-Join-Coords");
 				config.set("Sign-Join-Coords",coords);
 				

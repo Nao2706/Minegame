@@ -29,7 +29,19 @@ Message-My-Points:
    message-points-decoracion1: 
      - "&a==============TUS==PUNTOS=================="
    message-points-texto: 
-     - "&a&l Jugador: &6%player% | Puntos:&5%pointuser% "
+     - '&a&l Jugador: &6%player%'
+     - '&a&l Kills: &6%kills%'
+     - '&a&l Revivido: &6%revive%  '
+     - '&a&l Ayudas a Revivir: &6%helprevive% '
+     - '&a&l Muertes: &6%deads% '
+     - '&a&l Rachas: &6%streaks% '
+     - '&a&l Victorias: &6%wins% '
+     - '&a&l Derrotas: &6%loses% '
+     - '&a&l Prestigio: &c%prestigetext%'
+     - '&a&l Nivel: &c%lvl% &9| &a%xp% &6/ &a%refer%'
+     - '&a&l Progreso del : &a%porcent%'
+     - '&a&l XP Total General : &3&a%totalxp% '
+     - '%progress%'
    message-points-decoracion2: 
      - "&a======================================== " 
      
