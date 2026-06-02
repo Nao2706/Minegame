@@ -35,6 +35,7 @@ import me.nao.generalinfo.mg.GameReport;
 import me.nao.generalinfo.mg.ItemMenu;
 import me.nao.generalinfo.mg.PlayerInfo;
 import me.nao.manager.mg.GeneratorManager;
+import me.nao.manager.mg.TurretManager;
 import me.nao.shop.mg.MinigameShop1;
 import me.nao.topusers.mg.PHMiniGame;
 import me.nao.utils.mg.Utils;
@@ -74,6 +75,8 @@ public class Minegame extends JavaPlugin{
     private YamlFile playershistory;
     private YamlFile mapfrequency;
     private YamlFile recordtime;
+    private YamlFile torreta;
+    
 
     private Map<String, Boolean> delete;
     private Map<Player, PlayerInfo> playerinfopoo;
@@ -107,7 +110,7 @@ public class Minegame extends JavaPlugin{
   
     ///COMAND FILL AREA
 	HashMap <String,Boolean> cg ;
-    
+	private TurretManager turretManager;
    // HashMap <String,YamlFile> t2 ;
     
      //creada para agregar a al nombre de la arena 1 vez para iniciar timer o un cronometro
@@ -302,6 +305,7 @@ public class Minegame extends JavaPlugin{
 		this.items = new YamlFile(this, "Items");
 		this.mapfrequency = new YamlFile(this, "Mapfrequency");
 		this.recordtime = new YamlFile(this, "Record-time");
+		this.torreta = new YamlFile(this, "Torretas");
 
 		
 		
@@ -321,6 +325,14 @@ public class Minegame extends JavaPlugin{
 		 GameConditions c = new GameConditions(this);
 		 c.loadItemMenu();
 		 generatorManager = new GeneratorManager(this);
+		 
+		 
+		    turretManager = new TurretManager(this);
+		    Bukkit.getScheduler().runTaskLater(this, () -> { // espera 1 tick a que carguen mundos
+		        turretManager.cargarTorretas();
+		        turretManager.startTask();
+				Bukkit.getConsoleSender().sendMessage(Utils.colorTextChatColor("Torretas Cargadas: &6"+turretManager.getCount()));
+		    }, 1L);
 	}
 	
    public void onDisable() {
@@ -358,7 +370,7 @@ public class Minegame extends JavaPlugin{
 		pm.registerEvents(new EventRandoms(this),this );
 		pm.registerEvents(new SourceOfDamage(this),this );
 		pm.registerEvents(new MinigameShop1(this),this );
-		
+		pm.registerEvents(new TurretManager(this),this );
 	}
 
    public void InitializerMg() {
@@ -577,6 +589,10 @@ public class Minegame extends JavaPlugin{
    
    public YamlFile getRecordTime() {
        return recordtime; 
+   }   
+   
+   public YamlFile getTurrets() {
+       return torreta; 
    }   
    
     
