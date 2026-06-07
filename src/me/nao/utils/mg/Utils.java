@@ -13,6 +13,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadWriteNBT;
@@ -294,4 +295,39 @@ public class Utils {
 			}
 			return text;
 		} 
+		
+		
+		
+		@SuppressWarnings("deprecation")
+		public static boolean matchSimilar(ItemStack item1, ItemStack item2) {
+		    if (item1 == null || item2 == null) return false;
+		    if (item1.getType() != item2.getType()) return false;
+		    if (!item1.hasItemMeta() || !item2.hasItemMeta()) return !item1.hasItemMeta() && !item2.hasItemMeta();
+		    
+		    ItemMeta meta1 = item1.getItemMeta();
+		    ItemMeta meta2 = item2.getItemMeta();
+		    
+		    // 1. Display Name
+		    if (meta1.hasDisplayName() != meta2.hasDisplayName()) return false;
+		    if (meta1.hasDisplayName() && !meta1.getDisplayName().equals(meta2.getDisplayName())) return false;
+		    
+		    // 2. Lore
+		    if (meta1.hasLore() != meta2.hasLore()) return false;
+		    if (meta1.hasLore() && !meta1.getLore().equals(meta2.getLore())) return false;
+		    
+		    // 3. Enchants
+		    if (!meta1.getEnchants().equals(meta2.getEnchants())) return false;
+		    
+		    // 4. ItemFlags
+		    if (!meta1.getItemFlags().equals(meta2.getItemFlags())) return false;
+		    
+		    // 5. CustomModelData si usas
+		    if (meta1.hasCustomModelData() != meta2.hasCustomModelData()) return false;
+		    if (meta1.hasCustomModelData() && meta1.getCustomModelData() != meta2.getCustomModelData()) return false;
+		    
+		    // Ignoramos damage/durability a propósito
+		    return true;
+		}
+		
+		
 }
