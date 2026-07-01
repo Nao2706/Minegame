@@ -40,9 +40,9 @@ public class TurretManager implements Listener {
     private static final Set<Location> torretas = ConcurrentHashMap.newKeySet();
     private static final Map<Location, Long> cooldown = new ConcurrentHashMap<>();
     private int maxPorMundo = 100;
-    private static final int RADIO_PASIVA = 30; // bloques para torreta pasiva
-    private static final int RADIO_BUSQUEDA = 55; // bloques para buscar player
-    private static final int RADIO_NO_DISPARO = 20; // bloques mínimos si no vuela
+    private static final int RADIO_PASIVA = 60; // bloques para torreta pasiva SI ROMPE X COSA
+    private static final int RADIO_BUSQUEDA = 75; // bloques para buscar player
+    private static final int RADIO_NO_DISPARO = 30; // bloques mínimos si no vuela
     private static final long COOLDOWN_GROUND = 800; // 0.8s para player caminando
     private static final long COOLDOWN_AIR = 50;     // 0.05s para elytra/TNT = Phalanx
 
@@ -323,34 +323,31 @@ public class TurretManager implements Listener {
     }
 
     private Vector predecirElytra(Player p, Location torretaLoc) {
-        if (!p.isGliding()) {
-            Location loc = p.getLocation();
-            Vector vel = p.getVelocity();
-            double distancia = loc.distance(torretaLoc);
-            double ticks = distancia / 3.5;
+        Location loc = p.getLocation();
+        Vector vel = p.getVelocity().clone();
+        double distancia = loc.distance(torretaLoc);
+        
+        // Para elytra/volando: predicción completa
+        if (p.isGliding()) {
+            double ticks = distancia / 8.0; // usa 8.0 porque lanzas a 8f
+            double gravedad = 0.04; // bajada de 0.08, Paper/Folia la nerfea
             
-            // Si camina/salta, apunta al torso aprox Y=1.2
-            double offsetY = 1.7; // base para que apunte al pecho
-            
-            if (vel.getY() > 0.1) offsetY += 0.8;      // saltando: súmale más
-            else if (vel.getY() < -0.1) offsetY -= 0.3; // cayendo: bájale poco
-            
-            Vector prediccion = loc.clone().add(vel.multiply(ticks)).add(0, offsetY, 0).toVector();
-            
-            double gravedad = 0.08;
-            prediccion.setY(prediccion.getY() - (gravedad * ticks * ticks * 0.5));
+            Vector prediccion = loc.clone().add(vel.multiply(ticks)).toVector();
+            prediccion.setY(prediccion.getY() - (gravedad * ticks * ticks));
             return prediccion;
         }
         
-        // Elytra sin cambios
-        Vector vel = p.getVelocity().clone();
-        Location loc = p.getLocation();
-        double gravedad = 0.08;
-        double distancia = loc.distance(torretaLoc);
-        double ticks = distancia / 3.5;
-        Vector prediccion = loc.clone().add(vel.multiply(ticks)).toVector();
-        prediccion.setY(prediccion.getY() - (gravedad * ticks * ticks * 0.5));
-        return prediccion;
+        // Para caminando/corriendo/detenido
+        // Si tiene velocidad real > 0.1, predice un poco
+        if (vel.lengthSquared() > 0.01) {
+            double ticks = Math.min(distancia / 7.5, 4.0); // cap a 4 ticks max
+            Vector prediccion = loc.clone().add(vel.multiply(ticks)).toVector();
+            prediccion.setY(prediccion.getY() + 1.2); // pecho
+            return prediccion;
+        }
+        
+        // Si está detenido o caminando sin velocidad: apunta directo al pecho
+        return loc.add(0, 1.2, 0).toVector();
     }
 
 //    @SuppressWarnings("deprecation")
