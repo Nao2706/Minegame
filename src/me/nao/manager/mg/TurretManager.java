@@ -92,6 +92,7 @@ public class TurretManager implements Listener {
                 
                 if (hayProyectil) {
                     if (System.currentTimeMillis() - cooldown.getOrDefault(loc, 0L) >= COOLDOWN_AIR) {
+  
                         buscarYDispararProyectiles(w, loc);
                         cooldown.put(loc, System.currentTimeMillis());
                         w.playSound(eye, Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2f);
@@ -276,8 +277,16 @@ public class TurretManager implements Listener {
     }
 
     private boolean puedeSerHerido(Player p) {
-        return (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE) 
-            && !p.isOp();
+    	
+    	if(p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE) {
+    		if(!p.isOp()) {
+    			return true;
+    		}
+    		
+    	}
+    	return false;
+//        return (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE) 
+//            && !p.isOp();
     }
 
     private void detectarYDisparar(Location blockLoc, Player p) {
@@ -384,8 +393,10 @@ public class TurretManager implements Listener {
     
     @SuppressWarnings("deprecation")
 	private void dispararRafaga(Location loc, Player target, boolean esAire) {
+    	if (!puedeSerHerido(target)) return;
         World w = loc.getWorld();
         if (w == null) return;
+       
         
         Location eye = loc.clone().add(0.5, 1.5, 0.5);
         
@@ -396,6 +407,8 @@ public class TurretManager implements Listener {
         int flechas = esAire ? 1 : 3;
         float velocidad = esAire ? 8f : 6f;
         float spread = esAire ? 0.0f : 0.5f;
+        
+        
         
         for (int i = 0; i < flechas; i++) {
             Arrow flecha = w.spawnArrow(eye, dir, velocidad, spread);
@@ -451,13 +464,14 @@ public class TurretManager implements Listener {
     
     @SuppressWarnings("deprecation")
 	private void buscarYDispararProyectiles(World w, Location torretaLoc) {
+    	
         Location eye = torretaLoc.clone().add(0.5, 1.5, 0.5);
         
         w.getNearbyEntities(eye, RADIO_BUSQUEDA, RADIO_BUSQUEDA, RADIO_BUSQUEDA, e -> 
             (e instanceof TNTPrimed) || (e instanceof Projectile && !(e instanceof Arrow))
         ).forEach(proyectil -> {
             // QUITA ESTA LÍNEA: if (System.currentTimeMillis() - cooldown... < 100) return;
-            
+            if(!(proyectil instanceof Player));
             Location targetLoc = proyectil.getLocation();
             Vector dir = targetLoc.subtract(eye).toVector().normalize();
             
