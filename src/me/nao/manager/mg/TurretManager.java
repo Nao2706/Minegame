@@ -89,17 +89,18 @@ public class TurretManager implements Listener {
                 boolean hayProyectil = !w.getNearbyEntities(eye, RADIO_BUSQUEDA, RADIO_BUSQUEDA, RADIO_BUSQUEDA, 
                     e -> e instanceof TNTPrimed || (e instanceof Projectile && !(e instanceof Arrow))
                 ).isEmpty();
-                
+                //SE ACTIVA PRIMERO CUANDO ERES OP
                 if (hayProyectil) {
                     if (System.currentTimeMillis() - cooldown.getOrDefault(loc, 0L) >= COOLDOWN_AIR) {
   
                         buscarYDispararProyectiles(w, loc);
+//                    	System.out.println("IS2: ");
                         cooldown.put(loc, System.currentTimeMillis());
                         w.playSound(eye, Sound.ENTITY_BLAZE_SHOOT, 0.5f, 2f);
                     }
                     continue; // IMPORTANTE: salta el resto
                 }
-                
+                //SE ACTIVA PRIMERO CUANDO NO ERES OP
                 // 2. PRIORIDAD 2: Player volando → Phalanx 50ms
                 Player targetVolando = buscarTarget(w, loc, true);
                 if (targetVolando != null) {
@@ -394,6 +395,7 @@ public class TurretManager implements Listener {
     @SuppressWarnings("deprecation")
 	private void dispararRafaga(Location loc, Player target, boolean esAire) {
     	if (!puedeSerHerido(target)) return;
+//    	System.out.println("IS: "+target.isOp());
         World w = loc.getWorld();
         if (w == null) return;
        
@@ -463,19 +465,24 @@ public class TurretManager implements Listener {
 //    }
     
     @SuppressWarnings("deprecation")
-	private void buscarYDispararProyectiles(World w, Location torretaLoc) {
-    	
+    private void buscarYDispararProyectiles(World w, Location torretaLoc) {
         Location eye = torretaLoc.clone().add(0.5, 1.5, 0.5);
         
-        w.getNearbyEntities(eye, RADIO_BUSQUEDA, RADIO_BUSQUEDA, RADIO_BUSQUEDA, e -> 
-            (e instanceof TNTPrimed) || (e instanceof Projectile && !(e instanceof Arrow))
-        ).forEach(proyectil -> {
-            // QUITA ESTA LÍNEA: if (System.currentTimeMillis() - cooldown... < 100) return;
-            if(!(proyectil instanceof Player));
+        w.getNearbyEntities(eye, RADIO_BUSQUEDA, RADIO_BUSQUEDA, RADIO_BUSQUEDA, e -> {
+            // Solo TNT y proyectiles hostiles
+            if (e instanceof TNTPrimed) return true;
+            
+            if (e instanceof Projectile && !(e instanceof Arrow)) {
+                // Extra check: que no sea una flecha de player
+                if (e instanceof Player) return false;
+                return true;
+            }
+            return false;
+        }).forEach(proyectil -> {
             Location targetLoc = proyectil.getLocation();
             Vector dir = targetLoc.subtract(eye).toVector().normalize();
             
-            Arrow flecha = w.spawnArrow(eye, dir, 8f, 0.0f); // 8f para alcanzar TNT/cohetes
+            Arrow flecha = w.spawnArrow(eye, dir, 8f, 0.0f);
             flecha.setDamage(10);
             flecha.setCritical(true);
             flecha.setFireTicks(1200);
