@@ -6,7 +6,7 @@ import org.bukkit.ChatColor;
 public enum StopMotive {
 	
 	ERROR(""+ChatColor.RED+ChatColor.BOLD+"ERROR DE MAPA"),
-	NINGUNO(""+ChatColor.WHITE+ChatColor.BOLD+"PARTIDA NORMAL"),
+	NINGUNA(""+ChatColor.WHITE+ChatColor.BOLD+"PARTIDA NORMAL"),
 	WIN(""+ChatColor.GREEN+ChatColor.BOLD+"VICTORIA FORZADA"),
 	LOSE(""+ChatColor.DARK_PURPLE+ChatColor.BOLD+"DERROTA FORZADA"),
 	FORCE(""+ChatColor.RED+ChatColor.BOLD+"INTERRUPCION FORZADA");

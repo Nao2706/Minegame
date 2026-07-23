@@ -68,7 +68,7 @@ public class TurretManager implements Listener {
         }
     }
 
-    
+    //EL BOOLEAN HAY PROYECTIL ATACA POR TEMAS DIFERENTES
     public void startTask() {
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (Bukkit.getOnlinePlayers().isEmpty() || torretas.isEmpty()) return;

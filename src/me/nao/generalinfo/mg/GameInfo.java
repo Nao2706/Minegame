@@ -53,7 +53,7 @@ public class GameInfo {
 		this.minplayers = 1;
 		this.type = null;
 		this.estpart = GameStatus.ESPERANDO;
-		this.motivo = StopMotive.NINGUNO;
+		this.motivo = StopMotive.NINGUNA;
 		this.mapstatus = MapStatus.UNKNOW;
 		this.boss = null;
 		this.time = "0";
@@ -77,7 +77,7 @@ public class GameInfo {
 		this.pointsperdeads = 30;
 		this.pointsperrevive = 10;
 		this.pointsperhelprevive = 15;
-		this.stopreason = StopMotive.NINGUNO.getValue();
+		this.stopreason = StopMotive.NINGUNA.getValue();
 		this.dispenserrange = 0;
 		this.ranked = false;
 		this.pointsloseporcent = 0;
