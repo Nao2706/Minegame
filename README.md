@@ -19,6 +19,8 @@ Minijuegos
 - Todos contra Todos (Completed) Renombrado a PointHunt
 - Duelo con Elytras
 - Añadir Carteles para unirse.
+- Estructurar mejor el tema de YMLS
+- Organizar mejor el codigo
 
 
 Muerte de Laptop HP (Viviras en mi Memoria)
