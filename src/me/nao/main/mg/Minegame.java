@@ -40,6 +40,7 @@ import me.nao.shop.mg.MinigameShop1;
 import me.nao.topusers.mg.PHMiniGame;
 import me.nao.utils.mg.Utils;
 import me.nao.yamlfile.mg.YamlFile;
+import me.nao.yamlfile.mg.YamlFiles;
 import net.milkbowl.vault.economy.Economy;
 
 
@@ -76,6 +77,8 @@ public class Minegame extends JavaPlugin{
     private YamlFile mapfrequency;
     private YamlFile recordtime;
     private YamlFile torreta;
+    private YamlFiles test;
+    
     
 
     private Map<String, Boolean> delete;
@@ -92,6 +95,7 @@ public class Minegame extends JavaPlugin{
     private GeneratorManager generatorManager;
     
    //==================================== 
+	private Map<String,YamlFiles>getalldata ; // YML Manager
 	private Map<String,YamlFile>getAllYmls ; // YML Manager
 	private Map<String,YamlFile>getAllYmlsdialog ; 
 	
@@ -291,6 +295,7 @@ public class Minegame extends JavaPlugin{
 			Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD+"[VAULT] "+ChatColor.RED+"No Encontrado :( para MG");
 		}
 		
+		this.test = new YamlFiles(this, "Test");
 		
 		this.reports = new YamlFile(this, "Reports");
 		this.playershistory = new YamlFile(this, "Players-History");
@@ -541,6 +546,9 @@ public class Minegame extends JavaPlugin{
 	 
    }
    
+   public YamlFiles getTests() {
+       return test; 
+   }
    
    public YamlFile getConfig() {
        return config; 
