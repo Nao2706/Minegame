@@ -128,7 +128,7 @@ public class GameReportsManager {
 		if(plugin.getTempCooldownReport().containsKey(player)){
 			long timeleft = plugin.getTempCooldownReport().get(player) / 1000 + time - System.currentTimeMillis() / 1000;
 			if(timeleft > 0) {
-				player.sendMessage(ChatColor.RED+"Report-Cooldown: "+ChatColor.YELLOW+"Debes esperar "+ChatColor.GREEN+timeleft+ChatColor.YELLOW+" para volver a Reportar.");
+				player.sendMessage(Utils.colorTextChatColor("&cReport-Cooldown: &eDebes esperar &a"+timeleft+"&e para volver a Reportar."));
 				return true;
 			}
 			plugin.getTempCooldownReport().remove(player);

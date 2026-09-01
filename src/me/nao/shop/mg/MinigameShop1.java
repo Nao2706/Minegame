@@ -266,90 +266,147 @@ public class MinigameShop1 implements Listener{
 	
 	//==========================================================
 	
-	public void MenuDecoration(Inventory inv , Material m) {
-		List<Integer> l1 = new ArrayList<Integer>();
-		l1.add(0);l1.add(1);l1.add(2);l1.add(3);l1.add(4);l1.add(5);l1.add(6);l1.add(7);l1.add(8);l1.add(9);l1.add(17);l1.add(18);l1.add(26);
-		l1.add(27);l1.add(35);l1.add(36);l1.add(44);l1.add(45);l1.add(46);l1.add(47);l1.add(48);l1.add(49);l1.add(50);l1.add(51);l1.add(52);l1.add(53);
-		
-		for(int i = 0 ; i < 54; i++) {
-			if(l1.contains(i)) {
-				inv.setItem(i, new ItemStack(m));
-			
-			}
-		}
-		return;
+	public void MenuDecoration(Inventory inv, Material m) {
+	    int[] bordes = {0,1,2,3,4,5,6,7,8, 9,17, 18,26, 27,35, 36,44, 45,46,47,48,49,50,51,52,53};
+	    ItemStack panel = new ItemStack(m);
+	    for(int slot : bordes){
+	        inv.setItem(slot, panel);
+	    }
+	}
+
+	public void PagsCreation(Player player, Inventory inv, List<ItemStack> itemlist) {
+	    if(itemlist.isEmpty()) {
+	        return;
+	    }
+
+	    int maxPorPag = 22;
+	    int totalItems = itemlist.size();
+
+	    // ceil real, ya no int/int
+	    int totalPags = (int) Math.ceil((double) totalItems / maxPorPag);
+	    if(totalPags == 0) totalPags = 1;
+
+	    // Anti NullPointer aunque tengas checks afuera
+	    int pagActual = plugin.getPags().getOrDefault(player, 1);
+	    if(pagActual < 1) pagActual = 1;
+	    if(pagActual > totalPags) pagActual = totalPags;
+
+	    // Info pagina
+	    ItemStack it = new ItemStack(Material.BOOK);
+	    ItemMeta meta = it.getItemMeta();
+	    meta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + "PAGINA: " + pagActual + "/" + totalPags);
+	    it.setItemMeta(meta);
+	    inv.setItem(4, it); // lo ponia en el centro arriba, si lo quieres en otro slot cámbialo
+
+	    // Botones
+	    if(totalPags > pagActual){
+	        inv.setItem(53, Items.ADELANTE.getValue());
+	    }
+	    if(pagActual > 1) {
+	        inv.setItem(45, Items.ATRAS.getValue());
+	    }
+
+	    // Solo los items de esta pagina
+	    int inicio = (pagActual - 1) * maxPorPag;
+	    int fin = Math.min(inicio + maxPorPag, totalItems);
+
+	    List<ItemStack> itemsDeEstaPag = itemlist.subList(inicio, fin);
+
+	    // Slots validos dentro del marco
+	    int[] slotsValidos = {10,11,12,13,14,15,16, 19,20,21,22,23,24,25, 28,29,30,31,32,33,34};
+
+	    for(int i = 0; i < itemsDeEstaPag.size() && i < slotsValidos.length; i++) {
+	        inv.setItem(slotsValidos[i], itemsDeEstaPag.get(i));
+	    }
 	}
 	
-	public void PagsCreation(Player player,Inventory inv,List<ItemStack> itemlist) {
-			
-			if(itemlist.isEmpty()) {
-				return;
-			}
-		 
-			
-			int maxpag = 22;
-		    int pags = itemlist.size(); //para tienda con pags
-		    double resultado = pags / maxpag;//SE SETEA LA NUEVA GENERACION DE PAGS, A LLENAR 21 NUEVA PAGINA 22
-		    long pr = 0;
-		    pr = Math.round(resultado);
-		    pr = pr + 1;
-		
-		  	int pagactual = plugin.getPags().get(player);
-		  	int max = ((maxpag * (pagactual-1)) + (maxpag-1));
-		  	
-		  	
-			ItemStack it = new ItemStack(Material.BOOK);
-			ItemMeta meta = it.getItemMeta();
-			meta.setDisplayName(""+ChatColor.GREEN+ChatColor.BOLD+"PAGINA:" +pagactual+"/"+(pr+1));
-			it.setItemMeta(meta);
-			
-			// se coloca +1 por que pr antes de llegar al borde da 0 + 1 da como resultado pag 1
-			
-			
-			
-			//significa que tiene mas paginas si es mayor 
-			if((pr) > pagactual){
-				inv.setItem(53, Items.ADELANTE.getValue());
-			}
-			
-			//2
-			// tienes una pag que regresar 
-			if(pagactual >= 2) {
-				inv.setItem(45, Items.ATRAS.getValue());
-			}
-			//dentro de esta lista puede haber muchos items del 1 ................ etc 
-			// el for en base al calculo previo de paginas leera la lista hasta el tope
-			List<ItemStack> itemsgotomenu = new ArrayList<ItemStack>();
-			
-			for(int i = (maxpag * (pagactual-1)) ; i < itemlist.size();i++) {
-				ItemStack itemoflist = itemlist.get(i);
-				itemsgotomenu.add(itemoflist);
-				
-				if(i == max) {
-					break;
-				}
-			}
-			
-			//inicio en slot (esto tomando en cuenta la decoracion)
-			int slot = 10;
-			//se recorre para poder llenar solo los espacios mencionados
-			for(int r = 0 ; r<itemsgotomenu.size();r++) {
-				
-				//testa si termino en el ultimo slot por llenar y pasa a la siguiente fila
-				if(slot == 17 || slot == 26) {
-					slot = slot + 2;
-				}
-				
-				//romp
-				if(slot == 35) {
-					break;
-				}
-				inv.setItem(slot, itemsgotomenu.get(r));
-				slot++;
-			}
-			
-		 
-	}
+	
+	
+	
+//	public void MenuDecoration(Inventory inv , Material m) {
+//		List<Integer> l1 = new ArrayList<Integer>();
+//		l1.add(0);l1.add(1);l1.add(2);l1.add(3);l1.add(4);l1.add(5);l1.add(6);l1.add(7);l1.add(8);l1.add(9);l1.add(17);l1.add(18);l1.add(26);
+//		l1.add(27);l1.add(35);l1.add(36);l1.add(44);l1.add(45);l1.add(46);l1.add(47);l1.add(48);l1.add(49);l1.add(50);l1.add(51);l1.add(52);l1.add(53);
+//		
+//		for(int i = 0 ; i < 54; i++) {
+//			if(l1.contains(i)) {
+//				inv.setItem(i, new ItemStack(m));
+//			
+//			}
+//		}
+//		return;
+//	}
+//	
+//	public void PagsCreation(Player player,Inventory inv,List<ItemStack> itemlist) {
+//			
+//			if(itemlist.isEmpty()) {
+//				return;
+//			}
+//		 
+//			
+//			int maxpag = 22;
+//		    int pags = itemlist.size(); //para tienda con pags
+//		    double resultado = pags / maxpag;//SE SETEA LA NUEVA GENERACION DE PAGS, A LLENAR 21 NUEVA PAGINA 22
+//		    long pr = 0;
+//		    pr = Math.round(resultado);
+//		    pr = pr + 1;
+//		
+//		  	int pagactual = plugin.getPags().get(player);
+//		  	int max = ((maxpag * (pagactual-1)) + (maxpag-1));
+//		  	
+//		  	
+//			ItemStack it = new ItemStack(Material.BOOK);
+//			ItemMeta meta = it.getItemMeta();
+//			meta.setDisplayName(""+ChatColor.GREEN+ChatColor.BOLD+"PAGINA:" +pagactual+"/"+(pr+1));
+//			it.setItemMeta(meta);
+//			
+//			// se coloca +1 por que pr antes de llegar al borde da 0 + 1 da como resultado pag 1
+//			
+//			
+//			
+//			//significa que tiene mas paginas si es mayor 
+//			if((pr) > pagactual){
+//				inv.setItem(53, Items.ADELANTE.getValue());
+//			}
+//			
+//			//2
+//			// tienes una pag que regresar 
+//			if(pagactual >= 2) {
+//				inv.setItem(45, Items.ATRAS.getValue());
+//			}
+//			//dentro de esta lista puede haber muchos items del 1 ................ etc 
+//			// el for en base al calculo previo de paginas leera la lista hasta el tope
+//			List<ItemStack> itemsgotomenu = new ArrayList<ItemStack>();
+//			
+//			for(int i = (maxpag * (pagactual-1)) ; i < itemlist.size();i++) {
+//				ItemStack itemoflist = itemlist.get(i);
+//				itemsgotomenu.add(itemoflist);
+//				
+//				if(i == max) {
+//					break;
+//				}
+//			}
+//			
+//			//inicio en slot (esto tomando en cuenta la decoracion)
+//			int slot = 10;
+//			//se recorre para poder llenar solo los espacios mencionados
+//			for(int r = 0 ; r<itemsgotomenu.size();r++) {
+//				
+//				//testa si termino en el ultimo slot por llenar y pasa a la siguiente fila
+//				if(slot == 17 || slot == 26) {
+//					slot = slot + 2;
+//				}
+//				
+//				//romp
+//				if(slot == 35) {
+//					break;
+//				}
+//				inv.setItem(slot, itemsgotomenu.get(r));
+//				slot++;
+//			}
+//			
+//		 
+//	}
 	
 	public void ShowObjetives(Player player) {
 		
