@@ -9,6 +9,7 @@ Dar algun boost
 Mejorar en lo posible el Armor Stand del revive
 - Reducir tiempo de resurreccion
 Sistema de Rotacion de mapa (Considerar)
+- Codigo de Equipos (para duelo por equipos o cualquier otro estilo)
 
 Minijuegos
 - Duelo de Palas
