@@ -22,6 +22,10 @@ Minijuegos
 - Añadir Carteles para unirse.
 - Estructurar mejor el tema de YMLS
 - Organizar mejor el codigo
+- Agregar verificador de reportes (que el jugador pueda ver sus reportes)
+- Agregar Radio (Hablar Globalmente con Jugadores en otros mapas Activos)
+- Colocar Skilld (por verse)
+- Tienda con descuentos (por confirmar)
 
 
 Muerte de Laptop HP (Viviras en mi Memoria)
