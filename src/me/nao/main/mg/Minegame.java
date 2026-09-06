@@ -95,6 +95,7 @@ public class Minegame extends JavaPlugin{
     private GeneratorManager generatorManager;
     
    //==================================== 
+	@SuppressWarnings("unused")
 	private Map<String,YamlFiles>getalldata ; // YML Manager
 	private Map<String,YamlFile>getAllYmls ; // YML Manager
 	private Map<String,YamlFile>getAllYmlsdialog ; 

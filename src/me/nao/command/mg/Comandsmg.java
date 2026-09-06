@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -6862,8 +6864,70 @@ public class Comandsmg implements CommandExecutor{
 			return false;
 		}
 	}
-	
-	
+
+
+
+	public void desordenarInventario(Player player) {
+	    List<ItemStack> todos = new ArrayList<>();
+
+	    // 1. Recoger todo
+	    for(ItemStack it : player.getInventory().getStorageContents()){
+	        if(it!= null && it.getType()!= Material.AIR) todos.add(it);
+	    }
+	    // Armadura
+	    for(ItemStack it : player.getInventory().getArmorContents()){
+	        if(it!= null && it.getType()!= Material.AIR) todos.add(it);
+	    }
+	    // Offhand
+	    ItemStack offhand = player.getInventory().getItemInOffHand();
+	    if(offhand!= null && offhand.getType()!= Material.AIR){
+	        todos.add(offhand);
+	    }
+
+	    if(todos.isEmpty()) return;
+
+	    // 2. Mezclar
+	    Collections.shuffle(todos);
+
+	    // 3. Vaciar todo de golpe para evitar duplicar
+	    player.getInventory().clear();
+	    // Necesario para que clear() borre armadura tambien en algunas versiones
+	    player.getInventory().setArmorContents(null);
+	    player.getInventory().setItemInOffHand(null);
+
+	    // 4. Repartir de nuevo en 41 slots
+	    // 0-35 = inventario normal, 36-39 = armadura, 40 = offhand
+	    // En Bukkit los slots son: 36 botas, 37 leggings, 38 pecho, 39 casco
+
+	    Iterator<ItemStack> it = todos.iterator();
+
+	    // Primero llenamos armadura con items random (para que no quede vacía si estaba full)
+	    ItemStack[] nuevaArmadura = new ItemStack[4];
+	    for(int i = 0; i < 4 && it.hasNext(); i++){
+	        nuevaArmadura[i] = it.next();
+	    }
+	    player.getInventory().setArmorContents(nuevaArmadura);
+
+	    // Offhand
+	    if(it.hasNext()){
+	        player.getInventory().setItemInOffHand(it.next());
+	    }
+
+	    // Resto al inventario principal
+	    while(it.hasNext()){
+	        ItemStack sobrante = it.next();
+	        // Si por algún bug queda sin espacio, lo tira al suelo
+	        HashMap<Integer, ItemStack> noEntro = player.getInventory().addItem(sobrante);
+	        if(!noEntro.isEmpty()){
+	            for(ItemStack drop : noEntro.values()){
+	                player.getWorld().dropItemNaturally(player.getLocation(), drop);
+	            }
+	        }
+	    }
+
+	    player.updateInventory();
+	    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 0.5f);
+	}
 	
 	 
 }
