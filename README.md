@@ -24,8 +24,9 @@ Minijuegos
 - Organizar mejor el codigo
 - Agregar verificador de reportes (que el jugador pueda ver sus reportes)
 - Agregar Radio (Hablar Globalmente con Jugadores en otros mapas Activos)
-- Colocar Skilld (por verse)
+- Colocar Skills (por verse)
 - Tienda con descuentos (por confirmar)
+- Modo Masmorra ? (por confirmar)
 
 
 Muerte de Laptop HP (Viviras en mi Memoria)
