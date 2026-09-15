@@ -27,7 +27,8 @@ Minijuegos
 - Colocar Skills (por verse)
 - Tienda con descuentos (por confirmar)
 - Modo Masmorra ? (por confirmar)
-
+- Mejorar tiendas
+- Añadir mas items
 
 Muerte de Laptop HP (Viviras en mi Memoria)
 04/02/2026 
