@@ -29,6 +29,7 @@ Minijuegos
 - Modo Masmorra ? (por confirmar)
 - Mejorar tiendas
 - Añadir mas items
+- Añadir Clases
 
 Muerte de Laptop HP (Viviras en mi Memoria)
 04/02/2026 
