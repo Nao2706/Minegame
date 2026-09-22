@@ -30,6 +30,7 @@ Minijuegos
 - Mejorar tiendas
 - Añadir mas items
 - Añadir Clases
+- Colocar mas cosas interactivas (Cargadores , tableros interactivos etv)
 
 Muerte de Laptop HP (Viviras en mi Memoria)
 04/02/2026 
