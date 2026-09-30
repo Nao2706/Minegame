@@ -32,6 +32,7 @@ Minijuegos
 - Añadir Clases
 - Colocar mas cosas interactivas (Cargadores , tableros interactivos etc)
 - Sistema de Resurreccion con animacion adecuada
+- Añadir portales
 
 Muerte de Laptop HP (Viviras en mi Memoria)
 04/02/2026 
