@@ -33,6 +33,7 @@ Minijuegos
 - Colocar mas cosas interactivas (Cargadores , tableros interactivos etc)
 - Sistema de Resurreccion con animacion adecuada
 - Añadir portales
+- Calibrar sistema de Xp
 
 Muerte de Laptop HP (Viviras en mi Memoria)
 04/02/2026 
