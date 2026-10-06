@@ -567,13 +567,13 @@ public class GameIntoMap {
 													
 												}
 											}
-											MgTeams t = new MgTeams(plugin);
-											t.JoinTeamLifeMG(player);
+										MgTeams t = new MgTeams(plugin);
+										t.JoinTeamLifeMG(player);
 											
 											
-											player.setGameMode(GameMode.ADVENTURE);
-											healPlayer(player);
-											pl.setPlayerGameStatus(PlayerGameStatus.ALIVE);
+										player.setGameMode(GameMode.ADVENTURE);
+										healPlayer(player);
+										pl.setPlayerGameStatus(PlayerGameStatus.ALIVE);
 										
 										 pl.getGamePoints().setHelpRevive(pl.getGamePoints().getHelpRevive()+1);
 										 player.setNoDamageTicks(2*20);

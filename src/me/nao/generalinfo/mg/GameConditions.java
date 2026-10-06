@@ -3619,7 +3619,7 @@ public class GameConditions {
 		String map = plugin.getPlayerInfoPoo().get(player).getMapName();
 		FileConfiguration map1 = getGameConfig(map);
 		
-			//name =
+			//name = ???? 
 		  if(!canUseKit(map)) {
 			return;  
 		  }
